@@ -13,13 +13,17 @@ const FOOTER_LINKS = {
     { href: "/login", label: "Sign in" },
     { href: "/signup", label: "Create account" },
   ],
+  Legal: [
+    { href: "/privacy", label: "Privacy Policy" },
+    { href: "/terms", label: "Terms of Service" },
+  ],
 };
 
 export function SiteFooter() {
   return (
     <footer className="border-t border-[#e8e4dc] px-4 py-14 md:px-8">
       <div className="mx-auto max-w-6xl">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div className="space-y-4">
             <Logo />
             <p className="max-w-xs text-sm leading-relaxed text-[#6b6560]">
