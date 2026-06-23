@@ -122,6 +122,169 @@ export interface QueuedLead {
   reason: string;
 }
 
+export interface WhyFollowUp {
+  reason: string;
+  explanation: string;
+  suggestedAction: string;
+}
+
+/** Trust-building explanation for why a lead appears in the queue. */
+export function explainFollowUp(lead: Lead, now: Date = new Date()): WhyFollowUp {
+  const { reason } = priority(lead, now);
+  const sinceContact = daysSinceContact(lead, now);
+
+  let explanation = `This lead is in "${lead.status}"`;
+  if (lead.dealValue && lead.dealValue > 0) {
+    explanation += `, has a deal value of ${formatDealValue(lead.dealValue)}, and`;
+  } else {
+    explanation += " and";
+  }
+  if (sinceContact === null) {
+    explanation += " has never been contacted.";
+  } else if (sinceContact === 0) {
+    explanation += " was contacted today.";
+  } else {
+    explanation += ` has had no contact for ${sinceContact} day${sinceContact === 1 ? "" : "s"}.`;
+  }
+
+  return {
+    reason,
+    explanation,
+    suggestedAction: suggestedNextAction(lead, now),
+  };
+}
+
+function formatDealValue(n: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(n);
+}
+
+export interface RevenueAtRisk {
+  total: number;
+  breakdown: { label: string; amount: number }[];
+}
+
+/** Sum deal value for leads that need attention now. */
+export function computeRevenueAtRisk(
+  leads: Lead[],
+  now: Date = new Date()
+): RevenueAtRisk {
+  const queue = buildFollowUpQueue(leads, now);
+  const breakdownMap = new Map<string, number>();
+
+  for (const { lead, reason } of queue) {
+    const value = lead.dealValue ?? 0;
+    if (value <= 0) continue;
+    const key = reason.includes("Proposal")
+      ? "Proposal overdue"
+      : reason.includes("14+") || lead.status === "Stale"
+        ? "Stale high-value lead"
+        : reason.includes("Discovery")
+          ? "Discovery follow-up needed"
+          : reason.includes("New")
+            ? "New lead needs outreach"
+            : "Follow-up due";
+    breakdownMap.set(key, (breakdownMap.get(key) ?? 0) + value);
+  }
+
+  const breakdown = [...breakdownMap.entries()]
+    .map(([label, amount]) => ({ label, amount }))
+    .sort((a, b) => b.amount - a.amount);
+
+  return {
+    total: breakdown.reduce((sum, b) => sum + b.amount, 0),
+    breakdown,
+  };
+}
+
+export interface PipelineStageRow {
+  status: LeadStatus;
+  count: number;
+  value: number;
+}
+
+const PIPELINE_ORDER: LeadStatus[] = [
+  "New",
+  "Contacted",
+  "Discovery booked",
+  "Proposal sent",
+  "Waiting",
+  "Stale",
+  "Won",
+  "Lost",
+];
+
+export function computePipeline(leads: Lead[]): PipelineStageRow[] {
+  const map = new Map<LeadStatus, { count: number; value: number }>();
+  for (const status of PIPELINE_ORDER) {
+    map.set(status, { count: 0, value: 0 });
+  }
+  for (const lead of leads) {
+    const row = map.get(lead.status) ?? { count: 0, value: 0 };
+    row.count += 1;
+    row.value += lead.dealValue ?? 0;
+    map.set(lead.status, row);
+  }
+  return PIPELINE_ORDER.map((status) => ({
+    status,
+    count: map.get(status)?.count ?? 0,
+    value: map.get(status)?.value ?? 0,
+  })).filter((r) => r.count > 0);
+}
+
+export interface ComingUpRow {
+  label: string;
+  count: number;
+}
+
+/** Follow-ups grouped for the next 7 days. */
+export function computeComingUp(leads: Lead[], now: Date = new Date()): ComingUpRow[] {
+  const open = leads.filter((l) => !isClosed(l) && l.nextFollowUpDate);
+  const buckets: ComingUpRow[] = [
+    { label: "Today", count: 0 },
+    { label: "Tomorrow", count: 0 },
+    { label: "This week", count: 0 },
+    { label: "Next week", count: 0 },
+  ];
+
+  for (const lead of open) {
+    const due = daysUntilFollowUp(lead, now);
+    if (due === null) continue;
+    if (due <= 0) buckets[0].count += 1;
+    else if (due === 1) buckets[1].count += 1;
+    else if (due <= 6) buckets[2].count += 1;
+    else if (due <= 13) buckets[3].count += 1;
+  }
+
+  return buckets.filter((b) => b.count > 0);
+}
+
+export interface TodayFocus {
+  totalToday: number;
+  proposalCount: number;
+  staleCount: number;
+  newCount: number;
+  topLead: QueuedLead | null;
+}
+
+export function computeTodayFocus(leads: Lead[], now: Date = new Date()): TodayFocus {
+  const queue = buildFollowUpQueue(leads, now);
+  const todayItems = queue.filter(
+    ({ lead }) => needsFollowUpToday(lead, now) || priority(lead, now).score > 0
+  );
+
+  return {
+    totalToday: todayItems.length,
+    proposalCount: todayItems.filter(({ lead }) => lead.status === "Proposal sent").length,
+    staleCount: todayItems.filter(({ lead }) => isStale(lead, now)).length,
+    newCount: todayItems.filter(({ lead }) => lead.status === "New").length,
+    topLead: queue[0] ?? null,
+  };
+}
+
 /** Build the prioritized "Follow up now" list. */
 export function buildFollowUpQueue(leads: Lead[], now: Date = new Date()): QueuedLead[] {
   return leads
@@ -145,14 +308,17 @@ export interface DashboardMetrics {
   hot: number;
   needsToday: number;
   stale: number;
+  revenueAtRisk: number;
 }
 
 export function computeMetrics(leads: Lead[], now: Date = new Date()): DashboardMetrics {
+  const revenue = computeRevenueAtRisk(leads, now);
   return {
     total: leads.length,
     hot: leads.filter(isHot).length,
     needsToday: leads.filter((l) => needsFollowUpToday(l, now)).length,
     stale: leads.filter((l) => isStale(l, now)).length,
+    revenueAtRisk: revenue.total,
   };
 }
 

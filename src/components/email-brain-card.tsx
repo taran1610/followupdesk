@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { syncInboxAction, type InboxBrainStatus } from "@/app/actions/inbox";
+import { connectGmailAction } from "@/app/actions/gmail";
 import { relativeFromNow } from "@/lib/date";
 
 const CATEGORY_VARIANT: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
@@ -76,15 +77,33 @@ export function EmailBrainCard({ status }: { status: InboxBrainStatus }) {
             Email Brain
           </CardTitle>
           <CardDescription>
-            Connect Gmail to read threads, categorize leads, and draft follow-ups.
-            You always approve before anything sends.
+            Unlock automatic follow-up detection from Gmail. You always approve before
+            anything sends.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Button nativeButton={false} render={<Link href="/settings" />}>
-            <Mail className="size-4" />
-            Connect Gmail
-          </Button>
+        <CardContent className="space-y-4">
+          <ol className="grid gap-3 sm:grid-cols-3">
+            {[
+              { step: "1", label: "Connect Gmail", desc: "One-click OAuth" },
+              { step: "2", label: "Sync conversations", desc: "Last 30 days" },
+              { step: "3", label: "Get suggestions", desc: "Drafts + priorities" },
+            ].map((item) => (
+              <li
+                key={item.step}
+                className="rounded-lg border bg-muted/30 px-3 py-2 text-sm"
+              >
+                <span className="text-muted-foreground text-xs">Step {item.step}</span>
+                <p className="font-medium">{item.label}</p>
+                <p className="text-muted-foreground text-xs">{item.desc}</p>
+              </li>
+            ))}
+          </ol>
+          <form action={connectGmailAction}>
+            <Button type="submit">
+              <Mail className="size-4" />
+              Connect Gmail
+            </Button>
+          </form>
         </CardContent>
       </Card>
     );
