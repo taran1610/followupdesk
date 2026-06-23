@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import {
-  GMAIL_SEND_SCOPE,
+  GMAIL_OAUTH_SCOPES,
   gmailOAuthStateSecret,
 } from "./config";
 import { gmailRedirectUri } from "./request-origin";
@@ -25,7 +25,7 @@ export function buildGmailAuthUrl(userId: string, origin: string): string {
     client_id: clientId,
     redirect_uri: redirectUri,
     response_type: "code",
-    scope: GMAIL_SEND_SCOPE,
+    scope: GMAIL_OAUTH_SCOPES,
     access_type: "offline",
     prompt: "consent",
     state,

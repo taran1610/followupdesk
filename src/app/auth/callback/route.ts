@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
         expiresInSeconds: 3600,
       });
 
-      response = NextResponse.redirect(new URL("/settings?gmail=connected", origin));
+      response = NextResponse.redirect(new URL("/dashboard?gmail=connected", origin));
     } catch (err) {
       const message = err instanceof Error ? err.message : "connect_failed";
       return NextResponse.redirect(

@@ -13,8 +13,10 @@ import { requireUser } from "@/lib/auth";
 import { getRepository } from "@/lib/data";
 import { computeMetrics } from "@/lib/followups";
 import { relativeFromNow } from "@/lib/date";
+import { getInboxBrainStatusAction } from "@/app/actions/inbox";
 import { MetricCard } from "@/components/metric-card";
 import { FollowUpNow } from "@/components/follow-up-now";
+import { EmailBrainCard } from "@/components/email-brain-card";
 import { LeadFormDialog } from "@/components/lead-form-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,9 +41,10 @@ const ACTIVITY_ICON: Record<ActivityType, typeof Activity> = {
 export default async function DashboardPage() {
   const user = await requireUser();
   const repo = getRepository();
-  const [leads, activity] = await Promise.all([
+  const [leads, activity, inboxBrain] = await Promise.all([
     repo.listLeads(user.id),
     repo.listRecentActivity(user.id, 8),
+    getInboxBrainStatusAction(),
   ]);
   const metrics = computeMetrics(leads);
   const firstName = (user.fullName ?? "there").split(" ")[0];
@@ -90,6 +93,8 @@ export default async function DashboardPage() {
           hint="No contact in 14+ days"
         />
       </div>
+
+      <EmailBrainCard status={inboxBrain} />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <section className="space-y-3 lg:col-span-2">

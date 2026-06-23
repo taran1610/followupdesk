@@ -58,7 +58,7 @@ Lead name: ${input.leadName}
 Business type: ${input.businessType}
 Current status: ${input.status}
 Last interaction notes: ${input.notes || "none"}
-Tone: ${input.tone}
+${input.emailContext ? `Recent email thread:\n${input.emailContext}\n` : ""}Tone: ${input.tone}
 Goal: ${AI_GOAL_LABELS[input.goal]}
 
 Return JSON with exactly these keys:

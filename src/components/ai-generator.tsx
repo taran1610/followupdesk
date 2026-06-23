@@ -40,9 +40,17 @@ import { generateFollowUpAction } from "@/app/actions/ai";
 export function AiGenerator({
   lead,
   gmailConnected = false,
+  emailContext = "",
+  prefillDraft,
 }: {
   lead?: Lead;
   gmailConnected?: boolean;
+  emailContext?: string;
+  prefillDraft?: {
+    subject: string;
+    body: string;
+    suggestedNextFollowUpDate?: string;
+  };
 }) {
   const [leadName, setLeadName] = useState(lead?.name ?? "");
   const [businessType, setBusinessType] = useState(lead?.company ?? "");
@@ -57,14 +65,33 @@ export function AiGenerator({
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [source, setSource] = useState<"openai" | "mock" | null>(null);
-  const [output, setOutput] = useState<AiGenerationOutput | null>(null);
+  const [output, setOutput] = useState<AiGenerationOutput | null>(
+    prefillDraft
+      ? {
+          subject: prefillDraft.subject,
+          body: prefillDraft.body,
+          sms: "",
+          suggestedNextFollowUpDate:
+            prefillDraft.suggestedNextFollowUpDate ??
+            new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10),
+        }
+      : null
+  );
 
   function handleGenerate() {
     setError(null);
     setWarning(null);
     startTransition(async () => {
       const result = await generateFollowUpAction(
-        { leadName, businessType, status, notes, tone, goal },
+        {
+          leadName,
+          businessType,
+          status,
+          notes: [notes, emailContext].filter(Boolean).join("\n\n"),
+          tone,
+          goal,
+          emailContext: emailContext || undefined,
+        },
         lead?.id ?? null
       );
       if (result.ok && result.output) {

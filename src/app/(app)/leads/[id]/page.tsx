@@ -15,7 +15,10 @@ import {
 import { requireUser } from "@/lib/auth";
 import { getRepository } from "@/lib/data";
 import { getGmailStatusAction } from "@/app/actions/gmail";
+import { getLeadEmailThreadsAction } from "@/app/actions/inbox";
 import { suggestedNextAction } from "@/lib/followups";
+import { formatThreadsForAiContext } from "@/lib/inbox/draft";
+import { LeadEmailThreads } from "@/components/lead-email-threads";
 import { formatCurrency } from "@/lib/format";
 import { formatDate, formatDateTime, relativeDay, relativeFromNow } from "@/lib/date";
 import { StatusBadge } from "@/components/status-badge";
@@ -64,11 +67,18 @@ export default async function LeadDetailPage({
   const lead = await repo.getLead(user.id, id);
   if (!lead) notFound();
 
-  const [notes, followups, gmailStatus] = await Promise.all([
+  const [notes, followups, gmailStatus, emailThreads] = await Promise.all([
     repo.listNotes(user.id, id),
     repo.listFollowups(user.id, id),
     getGmailStatusAction(),
+    getLeadEmailThreadsAction(id),
   ]);
+
+  const emailContext = formatThreadsForAiContext(emailThreads);
+  const draftThread = emailThreads.find((t) => t.draftSubject && t.draftBody);
+  const prefillDraft = draftThread
+    ? { subject: draftThread.draftSubject!, body: draftThread.draftBody! }
+    : undefined;
 
   const isClosed = lead.status === "Won" || lead.status === "Lost";
 
@@ -205,19 +215,27 @@ export default async function LeadDetailPage({
         </Card>
       </div>
 
+      <LeadEmailThreads threads={emailThreads} leadId={lead.id} />
+
       {/* AI generator */}
-      <Card>
+      <Card id="draft-follow-up">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Sparkles className="size-4" />
             Draft a follow-up
           </CardTitle>
           <CardDescription>
-            Generate an email and SMS tailored to this lead. Everything is editable.
+            Generate an email and SMS tailored to this lead. Email Brain uses synced
+            threads for context. Edit everything — you send when ready.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <AiGenerator lead={lead} gmailConnected={gmailStatus.connected} />
+          <AiGenerator
+            lead={lead}
+            gmailConnected={gmailStatus.connected}
+            emailContext={emailContext}
+            prefillDraft={prefillDraft}
+          />
         </CardContent>
       </Card>
 

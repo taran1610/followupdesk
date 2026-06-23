@@ -15,7 +15,7 @@ const FAQS = [
   },
   {
     q: "Does AI actually send emails?",
-    a: "AI drafts the message—you review and edit it. Connect Gmail in Settings to send follow-ups from your own address with one click. Replies go to your normal inbox.",
+    a: "Never. Email Brain reads your recent Gmail threads to categorize leads and draft follow-ups. You review every message and click Send yourself — AI cannot email anyone on its own.",
   },
   {
     q: "Can I import my existing leads?",

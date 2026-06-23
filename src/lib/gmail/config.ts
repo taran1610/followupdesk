@@ -2,6 +2,10 @@ import { appOrigin } from "@/lib/config";
 import { gmailRedirectUri as buildRedirectUri } from "./request-origin";
 
 export const GMAIL_SEND_SCOPE = "https://www.googleapis.com/auth/gmail.send";
+export const GMAIL_READ_SCOPE = "https://www.googleapis.com/auth/gmail.readonly";
+
+/** Scopes requested when connecting Gmail (send + read for Email Brain). */
+export const GMAIL_OAUTH_SCOPES = `${GMAIL_SEND_SCOPE} ${GMAIL_READ_SCOPE}`;
 
 export function isGmailConfigured(): boolean {
   return Boolean(

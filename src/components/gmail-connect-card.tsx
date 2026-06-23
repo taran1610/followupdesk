@@ -55,7 +55,8 @@ export function GmailConnectCard({
           Gmail
         </CardTitle>
         <CardDescription>
-          Send follow-ups from your own address. Replies land in your normal inbox.
+          Email Brain reads recent threads, drafts follow-ups, and sends from your
+          address. You approve every send — AI never emails on its own.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -95,8 +96,8 @@ export function GmailConnectCard({
         ) : (
           <div className="space-y-4">
             <p className="text-muted-foreground text-sm">
-              Click below, choose your Google account, and approve send access. We
-              never read your inbox — only send the follow-ups you approve.
+              Approve read + send access once. We sync recent threads to categorize
+              leads and draft follow-ups — you click Send when ready.
             </p>
             <Button onClick={handleConnect} disabled={isPending}>
               {isPending ? (

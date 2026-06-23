@@ -6,7 +6,7 @@ import { requireUser } from "@/lib/auth";
 import { getRepository } from "@/lib/data";
 import { isSupabaseConfigured, appOrigin } from "@/lib/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { GMAIL_SEND_SCOPE } from "@/lib/gmail/config";
+import { GMAIL_OAUTH_SCOPES } from "@/lib/gmail/config";
 import {
   deleteGmailConnection,
   getGmailConnectionStatus,
@@ -57,7 +57,7 @@ export async function connectGmailAction(): Promise<void> {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      scopes: GMAIL_SEND_SCOPE,
+      scopes: GMAIL_OAUTH_SCOPES,
       redirectTo: `${appOrigin()}/auth/callback?gmail=connect`,
       queryParams: {
         access_type: "offline",

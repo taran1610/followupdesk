@@ -81,11 +81,11 @@ export function Features() {
               <span className="text-[11px] font-medium tracking-[0.18em] uppercase">AI drafts</span>
             </div>
             <h3 className="mt-4 text-xl font-semibold">
-              Messages tuned to your tone, ready to send
+              Email Brain drafts from your real threads
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-              Generate email and SMS follow-ups. Connect Gmail and send from your own
-              address.
+              Syncs Gmail, categorizes leads, and drafts follow-ups. You review and
+              send — AI never emails on its own.
             </p>
             <div className="mt-6 rounded-2xl bg-zinc-900 p-4">
               <p className="text-sm leading-relaxed text-zinc-300">
@@ -122,14 +122,15 @@ export function Features() {
             </p>
           </article>
 
-          {/* Gmail */}
+          {/* Email Brain */}
           <article className="marketing-card lg:col-span-4">
-            <FeatureLabel icon={Mail}>Send from Gmail</FeatureLabel>
+            <FeatureLabel icon={Mail}>Email Brain</FeatureLabel>
             <h3 className="mt-4 text-lg font-semibold text-zinc-950">
-              Your address, your replies
+              Read, categorize, send — you stay in control
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-[#6b6560]">
-              Connect Gmail and follow-ups send as you. Replies hit your inbox.
+              Syncs recent Gmail threads, flags who needs a reply, and sends from your
+              address when you click Send.
             </p>
           </article>
 

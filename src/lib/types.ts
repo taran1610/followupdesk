@@ -101,6 +101,8 @@ export interface AiGenerationInput {
   notes: string;
   tone: AiTone;
   goal: AiGoal;
+  /** Recent Gmail thread context from Email Brain sync. */
+  emailContext?: string;
 }
 
 export interface AiGenerationOutput {

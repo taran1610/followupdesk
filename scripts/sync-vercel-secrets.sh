@@ -25,7 +25,9 @@ add_env() {
     echo "Skip $name (empty)"
     return
   fi
-  printf '%s' "$value" | vercel env add "$name" production preview development --force
+  printf '%s' "$value" | vercel env add "$name" production --force -y
+  printf '%s' "$value" | vercel env add "$name" preview --force -y
+  printf '%s' "$value" | vercel env add "$name" development --force -y
   echo "Set $name"
 }
 
