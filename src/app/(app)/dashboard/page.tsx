@@ -115,7 +115,7 @@ export default async function DashboardPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-orange-600"
+                  className="text-foreground"
                   nativeButton={false}
                   render={<Link href="/leads" />}
                 >

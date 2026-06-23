@@ -12,10 +12,10 @@ import { connectGmailAction } from "@/app/actions/gmail";
 import { relativeFromNow } from "@/lib/date";
 
 const CATEGORY_ROWS = [
-  { key: "needsReply" as const, label: "Needs reply", color: "bg-rose-500" },
-  { key: "waiting" as const, label: "Waiting on them", color: "bg-sky-400" },
-  { key: "goneQuiet" as const, label: "Gone quiet", color: "bg-amber-400" },
-  { key: "newInquiries" as const, label: "New inquiries", color: "bg-orange-500" },
+  { key: "needsReply" as const, label: "Needs reply", color: "bg-zinc-900" },
+  { key: "waiting" as const, label: "Waiting on them", color: "bg-zinc-600" },
+  { key: "goneQuiet" as const, label: "Gone quiet", color: "bg-zinc-400" },
+  { key: "newInquiries" as const, label: "New inquiries", color: "bg-zinc-700" },
 ];
 
 function categoryCounts(status: InboxBrainStatus) {
@@ -64,7 +64,7 @@ export function EmailBrainWidget({ status }: { status: InboxBrainStatus }) {
       <Card id="inbox">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
-            <Brain className="size-4 text-orange-600" />
+            <Brain className="size-4 text-foreground" />
             Email Brain
           </CardTitle>
         </CardHeader>
@@ -73,7 +73,7 @@ export function EmailBrainWidget({ status }: { status: InboxBrainStatus }) {
             Connect Gmail to categorize inbox threads and draft follow-ups.
           </p>
           <form action={connectGmailAction}>
-            <Button type="submit" size="sm" className="w-full bg-orange-600 hover:bg-orange-700">
+            <Button type="submit" size="sm" className="w-full">
               <Mail className="size-4" />
               Connect Gmail
             </Button>
@@ -90,7 +90,7 @@ export function EmailBrainWidget({ status }: { status: InboxBrainStatus }) {
     <Card id="inbox">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
-          <Brain className="size-4 text-orange-600" />
+          <Brain className="size-4 text-foreground" />
           Email Brain
         </CardTitle>
         <Button variant="ghost" size="icon" className="size-7" onClick={handleSync} disabled={isPending}>
@@ -108,7 +108,7 @@ export function EmailBrainWidget({ status }: { status: InboxBrainStatus }) {
           </p>
         )}
         {status.lastSyncError && (
-          <p className="rounded-md border border-amber-200 bg-amber-50 px-2 py-1.5 text-xs text-amber-800">
+          <p className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-1.5 text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200">
             {status.lastSyncError}
           </p>
         )}
@@ -134,7 +134,7 @@ export function EmailBrainWidget({ status }: { status: InboxBrainStatus }) {
         <Button
           variant="link"
           size="sm"
-          className="h-auto p-0 text-orange-600"
+          className="h-auto p-0 text-foreground"
           nativeButton={false}
           render={<Link href="/dashboard#inbox-full" />}
         >

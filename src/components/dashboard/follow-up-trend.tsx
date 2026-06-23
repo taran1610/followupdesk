@@ -39,7 +39,7 @@ export function FollowUpTrend({ activity }: { activity: ActivityItem[] }) {
           {trend.map((day) => (
             <div key={day.label} className="flex flex-1 flex-col items-center gap-1">
               <div
-                className="w-full rounded-t bg-orange-500/80 transition-all"
+                className="w-full rounded-t bg-zinc-800/80 transition-all dark:bg-zinc-200/80"
                 style={{
                   height: `${Math.max(8, Math.round((day.count / max) * 100))}%`,
                   minHeight: day.count > 0 ? "12px" : "4px",

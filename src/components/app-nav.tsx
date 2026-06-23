@@ -54,14 +54,14 @@ export function AppNav({
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               active
-                ? "bg-orange-50 text-orange-700 dark:bg-orange-950/50 dark:text-orange-300"
+                ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
                 : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground"
             )}
           >
             <Icon className="size-4 shrink-0" />
             <span className="flex-1">{item.label}</span>
             {badge != null && badge > 0 && (
-              <Badge className="h-5 min-w-5 justify-center rounded-full bg-orange-600 px-1.5 text-[10px] text-white">
+              <Badge className="h-5 min-w-5 justify-center rounded-full bg-zinc-900 px-1.5 text-[10px] text-white">
                 {badge > 99 ? "99+" : badge}
               </Badge>
             )}

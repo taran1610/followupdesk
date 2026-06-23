@@ -7,14 +7,14 @@ import { formatCurrency } from "@/lib/format";
 import type { Lead } from "@/lib/types";
 
 const STAGE_COLORS: Record<string, string> = {
-  New: "bg-orange-500",
-  Contacted: "bg-sky-400",
-  "Discovery booked": "bg-violet-500",
-  "Proposal sent": "bg-amber-500",
-  Waiting: "bg-blue-400",
-  Stale: "bg-slate-400",
-  Won: "bg-emerald-500",
-  Lost: "bg-rose-400",
+  New: "bg-zinc-900",
+  Contacted: "bg-zinc-700",
+  "Discovery booked": "bg-zinc-600",
+  "Proposal sent": "bg-zinc-500",
+  Waiting: "bg-zinc-400",
+  Stale: "bg-zinc-300",
+  Won: "bg-zinc-800",
+  Lost: "bg-zinc-400",
 };
 
 export function PipelineOverview({ leads }: { leads: Lead[] }) {
@@ -57,7 +57,7 @@ export function PipelineOverview({ leads }: { leads: Lead[] }) {
               </div>
               <div className="bg-muted h-2 overflow-hidden rounded-full">
                 <div
-                  className={`h-full rounded-full ${STAGE_COLORS[stage.status] ?? "bg-orange-500"}`}
+                  className={`h-full rounded-full ${STAGE_COLORS[stage.status] ?? "bg-zinc-900"}`}
                   style={{ width: `${Math.round((stage.value / maxValue) * 100)}%` }}
                 />
               </div>

@@ -10,7 +10,7 @@ import { getInboxBrainStatusAction } from "@/app/actions/inbox";
 function AppLogo() {
   return (
     <Link href="/dashboard" className="flex items-center gap-2.5">
-      <div className="flex size-8 items-center justify-center rounded-lg bg-orange-600 text-white">
+      <div className="flex size-8 items-center justify-center rounded-lg bg-zinc-900 text-white">
         <Mail className="size-4" />
       </div>
       <span className="text-sm font-semibold tracking-tight">{APP_NAME}</span>

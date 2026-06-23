@@ -17,14 +17,14 @@ function initials(user: AuthUser): string {
 export function SidebarFooter({ user }: { user: AuthUser }) {
   return (
     <div className="space-y-3 border-t px-3 py-4">
-      <div className="rounded-lg border border-orange-200/80 bg-orange-50/50 p-3 dark:border-orange-900/50 dark:bg-orange-950/30">
+      <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
         <p className="text-xs font-semibold">Upgrade to Pro</p>
         <p className="text-muted-foreground mt-0.5 text-xs leading-snug">
           Unlimited AI drafts & advanced Email Brain.
         </p>
         <Button
           size="sm"
-          className="mt-2 h-7 w-full bg-orange-600 text-xs hover:bg-orange-700"
+          className="mt-2 h-7 w-full text-xs"
           nativeButton={false}
           render={<Link href="/pricing" />}
         >
@@ -34,7 +34,7 @@ export function SidebarFooter({ user }: { user: AuthUser }) {
       </div>
       <div className="flex items-center gap-2.5 px-1">
         <Avatar className="size-8">
-          <AvatarFallback className="bg-orange-100 text-xs text-orange-700">
+          <AvatarFallback className="bg-zinc-100 text-xs text-zinc-800">
             {initials(user)}
           </AvatarFallback>
         </Avatar>

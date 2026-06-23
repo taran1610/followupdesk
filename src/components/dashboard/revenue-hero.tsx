@@ -12,10 +12,10 @@ export function RevenueHero({ leads }: { leads: Lead[] }) {
   if (total <= 0) return null;
 
   return (
-    <div className="rounded-xl border border-orange-200/80 bg-gradient-to-r from-orange-50 to-amber-50/80 p-5 dark:border-orange-900/50 dark:from-orange-950/40 dark:to-amber-950/20">
+    <div className="rounded-xl border border-zinc-200 bg-gradient-to-r from-zinc-50 to-zinc-100/80 p-5 dark:border-zinc-800 dark:from-zinc-900/40 dark:to-zinc-950/20">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex gap-4">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-orange-100 text-orange-600 dark:bg-orange-900/60 dark:text-orange-300">
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100">
             <DollarSign className="size-5" />
           </div>
           <div>
@@ -42,7 +42,7 @@ export function RevenueHero({ leads }: { leads: Lead[] }) {
               &ldquo;{explainFollowUp(topLead.lead).suggestedAction}&rdquo;
             </p>
             <Button
-              className="mt-3 w-full bg-orange-600 hover:bg-orange-700"
+              className="mt-3 w-full"
               size="sm"
               nativeButton={false}
               render={

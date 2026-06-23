@@ -17,7 +17,7 @@ export function MetricCard({
 }) {
   const accentClass =
     accent === "warning"
-      ? "text-amber-600 dark:text-amber-400"
+      ? "text-zinc-700 dark:text-zinc-300"
       : accent === "danger"
         ? "text-rose-600 dark:text-rose-400"
         : accent === "success"

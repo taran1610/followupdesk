@@ -117,7 +117,7 @@ export function FollowUpTable({
                       : `${since} day${since === 1 ? "" : "s"} ago`}
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm text-orange-700 dark:text-orange-400">
+                  <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
                     {reason}
                   </span>
                   <span className="text-muted-foreground hidden text-xs lg:block">

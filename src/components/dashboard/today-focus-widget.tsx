@@ -5,9 +5,9 @@ import { computeTodayFocus } from "@/lib/followups";
 import type { Lead } from "@/lib/types";
 
 const FOCUS_ITEMS = [
-  { key: "proposalCount" as const, label: "Proposal follow-up", color: "bg-orange-500" },
-  { key: "newCount" as const, label: "New lead outreach", color: "bg-sky-400" },
-  { key: "staleCount" as const, label: "Stale lead revive", color: "bg-violet-500" },
+  { key: "proposalCount" as const, label: "Proposal follow-up", color: "bg-zinc-900" },
+  { key: "newCount" as const, label: "New lead outreach", color: "bg-zinc-600" },
+  { key: "staleCount" as const, label: "Stale lead revive", color: "bg-zinc-400" },
 ];
 
 export function TodayFocusWidget({ leads }: { leads: Lead[] }) {
@@ -17,7 +17,7 @@ export function TodayFocusWidget({ leads }: { leads: Lead[] }) {
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-base">
-          <Target className="size-4 text-orange-600" />
+          <Target className="size-4 text-foreground" />
           Today&apos;s focus
         </CardTitle>
       </CardHeader>
@@ -44,7 +44,7 @@ export function TodayFocusWidget({ leads }: { leads: Lead[] }) {
             {focus.topLead && (
               <Link
                 href={`/leads/${focus.topLead.lead.id}#draft-follow-up`}
-                className="text-orange-600 hover:underline text-xs font-medium"
+                className="text-foreground hover:underline text-xs font-medium"
               >
                 Start with {focus.topLead.lead.name} →
               </Link>

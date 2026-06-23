@@ -38,7 +38,7 @@ export function DashboardQuickActions({
     <div className="flex flex-wrap items-center gap-2">
       <LeadFormDialog
         trigger={
-          <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
+          <Button size="sm">
             <Plus className="size-4" />
             Add lead
           </Button>

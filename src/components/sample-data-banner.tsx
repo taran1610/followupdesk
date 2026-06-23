@@ -24,14 +24,14 @@ export function SampleDataBanner({ count }: { count: number }) {
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between dark:border-amber-900 dark:bg-amber-950">
+    <div className="flex flex-col gap-3 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800 dark:bg-zinc-900/50">
       <div className="flex gap-3">
-        <Sparkles className="mt-0.5 size-4 shrink-0 text-amber-700 dark:text-amber-300" />
+        <Sparkles className="mt-0.5 size-4 shrink-0 text-zinc-700 dark:text-zinc-300" />
         <div className="text-sm">
-          <p className="font-medium text-amber-900 dark:text-amber-100">
+          <p className="font-medium text-zinc-900 dark:text-zinc-100">
             Sample data is hidden — you have real Gmail data
           </p>
-          <p className="text-amber-800/80 dark:text-amber-200/80">
+          <p className="text-muted-foreground">
             {count} demo leads (Sarah, Mike, Marcus, etc.) are still in your account.
             Remove them to keep your pipeline clean.
           </p>
@@ -40,7 +40,7 @@ export function SampleDataBanner({ count }: { count: number }) {
       <Button
         size="sm"
         variant="outline"
-        className="shrink-0 border-amber-300 bg-white hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-950 dark:hover:bg-amber-900"
+        className="shrink-0"
         onClick={handleRemove}
         disabled={isPending}
       >
