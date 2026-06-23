@@ -17,13 +17,13 @@ messages. Built to be used every day, not to look like a landing page.
 - **AI follow-up generator**: tone + goal aware, produces an email subject &
   body, a short SMS/DM, and a suggested next follow-up date. Everything is
   editable with copy-to-clipboard.
-- **Works offline-first**: runs on seeded demo data with mock auth out of the
-  box, and cleanly upgrades to Supabase + OpenAI when env vars are present.
+- **Works with real accounts**: Supabase auth (Google or email/password) with
+  persistent Postgres storage. OpenAI optional for AI drafts.
 
 ## Tech stack
 
 Next.js (App Router) · TypeScript · Tailwind CSS v4 · shadcn/ui · lucide-react ·
-Supabase (optional) · OpenAI (optional).
+Supabase · OpenAI (optional) · Gmail OAuth (optional).
 
 ## Run it locally
 
@@ -32,27 +32,26 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000. With no environment variables set, you land in
-**demo mode** — click "Continue in demo mode" (or sign in with any email /
-password) and you'll see the seeded pipeline immediately.
+Open http://localhost:3000. **Supabase is required** — copy `.env.example` to
+`.env.local`, add your Supabase URL and anon key, then sign up with Google or
+email.
 
 ## Environment variables
 
-Copy `.env.example` to `.env.local`. All are optional.
+Copy `.env.example` to `.env.local`. Supabase credentials are **required** for
+sign-in and data storage.
 
 | Variable | Purpose |
 | --- | --- |
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL. Enables real DB + auth when set. |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key (paired with the URL). |
-| `SUPABASE_SERVICE_ROLE_KEY` | Reserved for future server-side admin tasks. |
-| `OPENAI_API_KEY` | Enables real OpenAI generation. Falls back to a template engine if unset or failing. |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL (**required**). |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key (**required**). |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-side tasks (Gmail token storage, webhooks). |
+| `NEXT_PUBLIC_APP_URL` | Canonical app URL for OAuth redirects. |
+| `OPENAI_API_KEY` | Enables real OpenAI generation. Falls back to templates if unset. |
 | `OPENAI_MODEL` | Optional model override (default `gpt-4o-mini`). |
-| `RESEND_API_KEY` | Placeholder for future email sending. |
-
-The app switches to Supabase only when **both** `NEXT_PUBLIC_SUPABASE_URL` and
-`NEXT_PUBLIC_SUPABASE_ANON_KEY` are set.
-
-## Setting up Supabase (optional)
+| `GOOGLE_GMAIL_CLIENT_ID` | Gmail OAuth client ID for send-as-user. |
+| `GOOGLE_GMAIL_CLIENT_SECRET` | Gmail OAuth client secret. |
+| `STRIPE_*` | Optional subscription billing. |
 
 1. Create a Supabase project.
 2. Run [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql)
@@ -60,8 +59,8 @@ The app switches to Supabase only when **both** `NEXT_PUBLIC_SUPABASE_URL` and
    `followups`, and `ai_generations` tables with Row Level Security (owner-only)
    and an auto-profile trigger on signup.
 3. Put your URL + anon key in `.env.local` and restart `npm run dev`.
-4. Sign up in the app, then optionally run
-   [`supabase/seed.sql`](supabase/seed.sql) to load the demo leads.
+4. Sign up in the app (Google or email), then optionally run
+   [`supabase/seed.sql`](supabase/seed.sql) to load sample leads.
 
 ## Follow-up logic
 
@@ -74,17 +73,16 @@ Implemented in [`src/lib/followups.ts`](src/lib/followups.ts):
 - The Follow up now queue ranks by an urgency score (status, overdue days,
   staleness, deal value).
 
-## What's mocked vs production-ready
+## Feature flags
 
-| Area | Demo mode (default) | Production (configured) |
+| Area | Without OpenAI | With OpenAI + Gmail |
 | --- | --- | --- |
-| Data | In-memory seeded store (resets on server restart) | Supabase Postgres with RLS |
-| Auth | Local session cookie, any credentials | Supabase email/password |
-| AI generation | Deterministic template engine | OpenAI (`gpt-4o-mini`), template fallback on error |
-| Email sending | Not sent (reminders are stored) | Resend hookup is a documented placeholder |
+| Auth | Supabase (Google or email) | Same |
+| Data | Supabase Postgres with RLS | Same |
+| AI generation | Template engine | OpenAI with template fallback |
+| Email sending | Copy/paste only | Send from connected Gmail |
 
-The UI, follow-up logic, CRUD flows, and AI generator are production-shaped and
-identical across both modes via a single repository abstraction
+The UI and follow-up logic use a single repository abstraction
 ([`src/lib/data`](src/lib/data)).
 
 ## Project structure
@@ -92,24 +90,25 @@ identical across both modes via a single repository abstraction
 ```
 src/
   app/
-    (auth)/login          # sign in / sign up / demo mode
+    (auth)/login          # sign in (Google or email)
+    (auth)/signup         # create account
+    (app)/settings        # Gmail connect
     (app)/dashboard       # metrics + follow up now + activity
     (app)/leads           # CRM table
     (app)/leads/[id]      # lead detail + AI generator
     actions/              # server actions (leads, notes, followups, ai, auth)
   components/             # UI building blocks + shadcn/ui
   lib/
-    data/                 # repository: mock store + Supabase impl + seed
+    data/                 # repository: Supabase impl + seed
     ai/generate.ts        # OpenAI + mock generator
     followups.ts          # follow-up rules & prioritization
     auth.ts, config.ts    # auth + feature flags
-supabase/                 # SQL migration + demo seed
+supabase/                 # SQL migrations + optional seed
 ```
 
 ## Recommended next steps
 
-- Wire Resend to actually send scheduled follow-ups and mark `sent_at`.
+- Add calendar sync for discovery calls.
 - Add a background job/cron to surface due reminders (email/notification).
-- Persist demo mode to local storage or SQLite so edits survive restarts.
 - Add pagination/server-side filtering for large pipelines.
 - Add tests around `lib/followups.ts` scoring and the repository layer.

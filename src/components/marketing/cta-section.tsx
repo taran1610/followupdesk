@@ -12,8 +12,8 @@ export function CtaSection() {
             Ready to stop losing warm leads?
           </h2>
           <p className="text-primary-foreground/80 relative mx-auto mt-4 max-w-xl text-lg">
-            Start free in demo mode. Connect your account and integrations when
-            you&apos;re ready to go live.
+            Create a free account, connect Gmail, and start following up from one calm
+            workspace.
           </p>
           <div className="relative mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button
@@ -33,7 +33,7 @@ export function CtaSection() {
               nativeButton={false}
               render={<Link href="/login" />}
             >
-              Try demo
+              Sign in
             </Button>
           </div>
         </div>

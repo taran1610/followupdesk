@@ -27,7 +27,7 @@ function initials(user: AuthUser): string {
     .join("");
 }
 
-export function UserMenu({ user, demoMode }: { user: AuthUser; demoMode: boolean }) {
+export function UserMenu({ user }: { user: AuthUser }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger render={<Button variant="ghost" className="h-9 gap-2 px-2" />}>
@@ -44,11 +44,6 @@ export function UserMenu({ user, demoMode }: { user: AuthUser; demoMode: boolean
             <span className="font-medium">{user.fullName ?? "Account"}</span>
             <span className="text-muted-foreground text-xs font-normal">{user.email}</span>
           </DropdownMenuLabel>
-          {demoMode && (
-            <DropdownMenuLabel className="text-muted-foreground text-xs font-normal">
-              Demo mode — data resets on restart
-            </DropdownMenuLabel>
-          )}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <form action={signOut} className="w-full">

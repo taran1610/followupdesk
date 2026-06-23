@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, PlayCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { APP_TAGLINE } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,12 +33,11 @@ export function Hero() {
               nativeButton={false}
               render={<Link href="/login" />}
             >
-              <PlayCircle className="size-4" />
-              Try the demo
+              Sign in
             </Button>
           </div>
           <p className="text-muted-foreground mt-4 text-sm">
-            No credit card · Works in demo mode today · Full account sync coming with Supabase
+            No credit card · Sign up with Google or email
           </p>
         </div>
       </div>

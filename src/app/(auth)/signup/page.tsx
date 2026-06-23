@@ -9,5 +9,5 @@ export default async function SignupPage() {
   const user = await getCurrentUser();
   if (user) redirect("/dashboard");
 
-  return <SignupForm supabaseEnabled={isSupabaseConfigured()} />;
+  return <SignupForm authConfigured={isSupabaseConfigured()} />;
 }

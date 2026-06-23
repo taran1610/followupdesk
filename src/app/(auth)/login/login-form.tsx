@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { Loader2 } from "lucide-react";
-import { continueAsDemo, signIn, type AuthState } from "@/app/actions/auth";
+import { signIn, type AuthState } from "@/app/actions/auth";
 import { GoogleSignInButton } from "@/components/google-sign-in-button";
 import { APP_NAME, APP_TAGLINE } from "@/lib/config";
 import { Button } from "@/components/ui/button";
@@ -31,14 +31,34 @@ function SubmitButton({ label }: { label: string }) {
 }
 
 export function LoginForm({
-  supabaseEnabled,
+  authConfigured,
   initialError,
 }: {
-  supabaseEnabled: boolean;
+  authConfigured: boolean;
   initialError?: string;
 }) {
   const [state, formAction] = useActionState(signIn, initialState);
   const error = state.error ?? initialError;
+
+  if (!authConfigured) {
+    return (
+      <div className="w-full max-w-sm space-y-6">
+        <div className="text-center">
+          <h1 className="text-xl font-semibold tracking-tight">{APP_NAME}</h1>
+          <p className="text-muted-foreground mt-1 text-sm">{APP_TAGLINE}</p>
+        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Sign-in unavailable</CardTitle>
+            <CardDescription>
+              Authentication is not configured on this server. Contact the site
+              administrator.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-sm space-y-6">
@@ -50,21 +70,16 @@ export function LoginForm({
       <Card>
         <CardHeader>
           <CardTitle>Sign in</CardTitle>
-          <CardDescription>
-            {supabaseEnabled
-              ? "Welcome back. Enter your credentials."
-              : "Demo mode is on — any email and password will work."}
-          </CardDescription>
+          <CardDescription>Welcome back. Sign in with Google or your email.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {supabaseEnabled && (
-            <>
-              <GoogleSignInButton />
-              <div className="relative">
-                <Separator />
-              </div>
-            </>
-          )}
+          <GoogleSignInButton />
+
+          <div className="flex items-center gap-3">
+            <span className="bg-border h-px flex-1" />
+            <span className="text-muted-foreground text-xs">or continue with email</span>
+            <span className="bg-border h-px flex-1" />
+          </div>
 
           <form action={formAction} className="space-y-4">
             <div className="space-y-2">
@@ -75,7 +90,7 @@ export function LoginForm({
                 type="email"
                 placeholder="you@studio.com"
                 autoComplete="email"
-                defaultValue={supabaseEnabled ? "" : "demo@followupdesk.app"}
+                required
               />
             </div>
             <div className="space-y-2">
@@ -86,7 +101,7 @@ export function LoginForm({
                 type="password"
                 placeholder="••••••••"
                 autoComplete="current-password"
-                defaultValue={supabaseEnabled ? "" : "demo1234"}
+                required
               />
             </div>
 
@@ -96,7 +111,7 @@ export function LoginForm({
               </p>
             )}
 
-            <SubmitButton label="Sign in" />
+            <SubmitButton label="Sign in with email" />
           </form>
 
           <p className="text-muted-foreground text-center text-sm">
@@ -105,30 +120,8 @@ export function LoginForm({
               Create an account
             </Link>
           </p>
-
-          <div className="relative">
-            <Separator />
-          </div>
-
-          {!supabaseEnabled && (
-            <form action={continueAsDemo}>
-              <Button type="submit" variant="outline" className="w-full">
-                Continue in demo mode
-              </Button>
-            </form>
-          )}
         </CardContent>
       </Card>
-    </div>
-  );
-}
-
-function Separator() {
-  return (
-    <div className="flex items-center gap-3">
-      <span className="bg-border h-px flex-1" />
-      <span className="text-muted-foreground text-xs">or</span>
-      <span className="bg-border h-px flex-1" />
     </div>
   );
 }

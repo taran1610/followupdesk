@@ -4,8 +4,8 @@ const FAQS = [
     a: "Coaches, consultants, and small agencies who sell through conversations—not high-volume outbound. If you have warm leads and need a calm place to track them, it's for you.",
   },
   {
-    q: "Do I need Supabase to use it today?",
-    a: "No. The app runs in demo mode with seeded data so you can explore immediately. When you're ready, connect Supabase for real accounts and persistent storage.",
+    q: "Do I need a credit card to start?",
+    a: "No. Create a free account with Google or email. Your leads and follow-ups are saved to your account from day one.",
   },
   {
     q: "Does AI actually send emails?",
@@ -13,7 +13,7 @@ const FAQS = [
   },
   {
     q: "Can I import my existing leads?",
-    a: "CSV import is on the roadmap. For now you can add leads manually or use the demo dataset to see how the workflow feels.",
+    a: "CSV import is on the roadmap. For now you can add leads manually from the Leads page.",
   },
   {
     q: "Is my data secure?",

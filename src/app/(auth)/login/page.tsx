@@ -17,7 +17,7 @@ export default async function LoginPage({
 
   return (
     <LoginForm
-      supabaseEnabled={isSupabaseConfigured()}
+      authConfigured={isSupabaseConfigured()}
       initialError={error ? decodeURIComponent(error.replace(/\+/g, " ")) : undefined}
     />
   );

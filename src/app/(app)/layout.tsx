@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Inbox } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { isSupabaseConfigured, APP_NAME } from "@/lib/config";
+import { APP_NAME } from "@/lib/config";
 import { AppNav } from "@/components/app-nav";
 import { MobileNavMenu, UserMenu } from "@/components/user-menu";
 
@@ -11,7 +11,6 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   const user = await requireUser();
-  const demoMode = !isSupabaseConfigured();
 
   return (
     <div className="flex min-h-dvh">
@@ -25,11 +24,6 @@ export default async function AppLayout({
         <div className="flex-1 px-3 py-2">
           <AppNav />
         </div>
-        {demoMode && (
-          <div className="text-muted-foreground px-4 py-3 text-xs">
-            Demo mode active
-          </div>
-        )}
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
@@ -43,7 +37,7 @@ export default async function AppLayout({
               <span className="text-sm font-semibold">{APP_NAME}</span>
             </Link>
           </div>
-          <UserMenu user={user} demoMode={demoMode} />
+          <UserMenu user={user} />
         </header>
 
         <main className="flex-1 px-4 py-6 md:px-8">

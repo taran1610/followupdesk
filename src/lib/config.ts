@@ -38,12 +38,3 @@ export const MARKETING_NAV = [
   { href: "/pricing", label: "Pricing" },
   { href: "/#faq", label: "FAQ" },
 ] as const;
-
-// Fixed identity used in local/demo mode (no Supabase configured).
-export const DEMO_USER = {
-  id: "00000000-0000-0000-0000-000000000001",
-  email: "demo@followupdesk.app",
-  fullName: "Demo Coach",
-};
-
-export const DEMO_SESSION_COOKIE = "fud_demo_session";

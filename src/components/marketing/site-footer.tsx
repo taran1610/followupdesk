@@ -11,7 +11,6 @@ const FOOTER_LINKS = {
   Company: [
     { href: "/login", label: "Sign in" },
     { href: "/signup", label: "Create account" },
-    { href: "/login", label: "Try demo" },
   ],
 };
 
