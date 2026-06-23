@@ -3,7 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { getRepository } from "@/lib/data";
-import { isGmailConfigured, isSupabaseConfigured } from "@/lib/config";
+import { isSupabaseConfigured, appOrigin } from "@/lib/config";
+import { isGmailConfigured } from "@/lib/gmail/config";
+import { gmailRedirectUri } from "@/lib/gmail/request-origin";
 import {
   deleteGmailConnection,
   getGmailConnectionStatus,
@@ -18,11 +20,13 @@ export interface GmailStatus {
   connected: boolean;
   email: string | null;
   connectedAt: string | null;
+  redirectUri: string | null;
 }
 
 export async function getGmailStatusAction(): Promise<GmailStatus> {
   const user = await requireUser();
   const configured = isSupabaseConfigured() && isGmailConfigured();
+  const redirectUri = configured ? gmailRedirectUri(appOrigin()) : null;
 
   if (!configured) {
     return {
@@ -30,6 +34,7 @@ export async function getGmailStatusAction(): Promise<GmailStatus> {
       connected: false,
       email: null,
       connectedAt: null,
+      redirectUri: null,
     };
   }
 
@@ -39,6 +44,7 @@ export async function getGmailStatusAction(): Promise<GmailStatus> {
     connected: Boolean(connection),
     email: connection?.email ?? null,
     connectedAt: connection?.connectedAt ?? null,
+    redirectUri,
   };
 }
 

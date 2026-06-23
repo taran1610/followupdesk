@@ -2,8 +2,8 @@ import crypto from "crypto";
 import {
   GMAIL_SEND_SCOPE,
   gmailOAuthStateSecret,
-  gmailRedirectUri,
 } from "./config";
+import { gmailRedirectUri } from "./request-origin";
 
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
@@ -16,17 +16,21 @@ export interface GoogleTokenResponse {
   token_type: string;
 }
 
-export function buildGmailAuthUrl(userId: string): string {
+export function buildGmailAuthUrl(userId: string, origin: string): string {
+  const redirectUri = gmailRedirectUri(origin);
   const state = signOAuthState(userId);
+  const clientId = process.env.GOOGLE_GMAIL_CLIENT_ID!.trim();
+
   const params = new URLSearchParams({
-    client_id: process.env.GOOGLE_GMAIL_CLIENT_ID!,
-    redirect_uri: gmailRedirectUri(),
+    client_id: clientId,
+    redirect_uri: redirectUri,
     response_type: "code",
     scope: GMAIL_SEND_SCOPE,
     access_type: "offline",
     prompt: "consent",
     state,
   });
+
   return `${GOOGLE_AUTH_URL}?${params.toString()}`;
 }
 
@@ -62,7 +66,6 @@ export function verifyOAuthState(state: string): string | null {
     const issuedAt = Number(issuedAtRaw);
     if (!userId || !Number.isFinite(issuedAt)) return null;
 
-    // Reject states older than 15 minutes.
     if (Date.now() - issuedAt > 15 * 60 * 1000) return null;
 
     return userId;
@@ -72,13 +75,15 @@ export function verifyOAuthState(state: string): string | null {
 }
 
 export async function exchangeCodeForTokens(
-  code: string
+  code: string,
+  origin: string
 ): Promise<GoogleTokenResponse> {
+  const redirectUri = gmailRedirectUri(origin);
   const body = new URLSearchParams({
     code,
-    client_id: process.env.GOOGLE_GMAIL_CLIENT_ID!,
-    client_secret: process.env.GOOGLE_GMAIL_CLIENT_SECRET!,
-    redirect_uri: gmailRedirectUri(),
+    client_id: process.env.GOOGLE_GMAIL_CLIENT_ID!.trim(),
+    client_secret: process.env.GOOGLE_GMAIL_CLIENT_SECRET!.trim(),
+    redirect_uri: redirectUri,
     grant_type: "authorization_code",
   });
 
@@ -88,9 +93,14 @@ export async function exchangeCodeForTokens(
     body,
   });
 
-  const data = (await res.json()) as GoogleTokenResponse & { error?: string };
+  const data = (await res.json()) as GoogleTokenResponse & {
+    error?: string;
+    error_description?: string;
+  };
   if (!res.ok) {
-    throw new Error(data.error ?? "Failed to connect Gmail.");
+    throw new Error(
+      data.error_description ?? data.error ?? "Failed to connect Gmail."
+    );
   }
   if (!data.refresh_token) {
     throw new Error(
@@ -104,8 +114,8 @@ export async function refreshAccessToken(
   refreshToken: string
 ): Promise<GoogleTokenResponse> {
   const body = new URLSearchParams({
-    client_id: process.env.GOOGLE_GMAIL_CLIENT_ID!,
-    client_secret: process.env.GOOGLE_GMAIL_CLIENT_SECRET!,
+    client_id: process.env.GOOGLE_GMAIL_CLIENT_ID!.trim(),
+    client_secret: process.env.GOOGLE_GMAIL_CLIENT_SECRET!.trim(),
     refresh_token: refreshToken,
     grant_type: "refresh_token",
   });

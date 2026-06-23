@@ -1,24 +1,19 @@
-import { NextResponse } from "next/server";
-import { appOrigin } from "@/lib/config";
-import {
-  exchangeCodeForTokens,
-  verifyOAuthState,
-} from "@/lib/gmail/oauth";
-import {
-  saveGmailConnection,
-} from "@/lib/gmail/connection";
+import { NextResponse, type NextRequest } from "next/server";
+import { exchangeCodeForTokens, verifyOAuthState } from "@/lib/gmail/oauth";
+import { saveGmailConnection } from "@/lib/gmail/connection";
 import { fetchGmailProfileEmail } from "@/lib/gmail/send";
+import { requestOrigin } from "@/lib/gmail/request-origin";
 
-export async function GET(request: Request) {
-  const origin = appOrigin();
+export async function GET(request: NextRequest) {
+  const origin = requestOrigin(request);
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
   const state = searchParams.get("state");
-  const oauthError = searchParams.get("error");
+  const oauthError = searchParams.get("error_description") ?? searchParams.get("error");
 
   if (oauthError) {
     return NextResponse.redirect(
-      `${origin}/settings?gmail=denied`
+      `${origin}/settings?gmail=denied&reason=${encodeURIComponent(oauthError)}`
     );
   }
 
@@ -32,7 +27,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const tokens = await exchangeCodeForTokens(code);
+    const tokens = await exchangeCodeForTokens(code, origin);
     const email = await fetchGmailProfileEmail(tokens.access_token);
 
     await saveGmailConnection({

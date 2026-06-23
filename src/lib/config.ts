@@ -11,7 +11,8 @@ export function isOpenAIConfigured(): boolean {
 
 export function isGmailConfigured(): boolean {
   return Boolean(
-    process.env.GOOGLE_GMAIL_CLIENT_ID && process.env.GOOGLE_GMAIL_CLIENT_SECRET
+    process.env.GOOGLE_GMAIL_CLIENT_ID?.trim() &&
+      process.env.GOOGLE_GMAIL_CLIENT_SECRET?.trim()
   );
 }
 
