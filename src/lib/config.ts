@@ -25,9 +25,11 @@ export function isStripeConfigured(): boolean {
 
 export function appOrigin(): string {
   const configured = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
-  if (configured) return configured;
+  if (configured && !configured.includes("localhost")) return configured;
+  const productionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  if (productionUrl) return `https://${productionUrl.replace(/^https?:\/\//, "")}`;
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return "http://localhost:3000";
+  return configured ?? "http://localhost:3000";
 }
 
 export const APP_NAME = "Follow-Up Desk";

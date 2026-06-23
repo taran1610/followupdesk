@@ -1,11 +1,26 @@
-import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/dashboard";
+function safeNextPath(next: string | null): string {
+  if (!next || !next.startsWith("/") || next.startsWith("//")) {
+    return "/dashboard";
+  }
+  return next;
+}
+
+export async function GET(request: NextRequest) {
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get("code");
+  const next = safeNextPath(requestUrl.searchParams.get("next"));
+  const oauthError = requestUrl.searchParams.get("error_description");
+
+  const origin = requestUrl.origin;
+
+  if (oauthError) {
+    return NextResponse.redirect(
+      `${origin}/login?error=${encodeURIComponent(oauthError)}`
+    );
+  }
 
   if (!code) {
     return NextResponse.redirect(`${origin}/login?error=missing_auth_code`);
@@ -17,15 +32,17 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/login?error=supabase_not_configured`);
   }
 
-  const cookieStore = await cookies();
+  // Cookies must be written onto the redirect response (not cookies() alone).
+  const response = NextResponse.redirect(new URL(next, origin));
+
   const supabase = createServerClient(url, anonKey, {
     cookies: {
       getAll() {
-        return cookieStore.getAll();
+        return request.cookies.getAll();
       },
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value, options }) => {
-          cookieStore.set(name, value, options);
+          response.cookies.set(name, value, options);
         });
       },
     },
@@ -38,5 +55,5 @@ export async function GET(request: Request) {
     );
   }
 
-  return NextResponse.redirect(`${origin}${next}`);
+  return response;
 }
