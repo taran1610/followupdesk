@@ -39,6 +39,13 @@ export interface InboxBrainStatus {
   lastSyncError: string | null;
   threadsSynced: number;
   queue: InboxQueueItem[];
+  stats: {
+    totalThreads: number;
+    matchedLeads: number;
+    needsReply: number;
+    newInquiries: number;
+    realConversations: number;
+  };
 }
 
 function mapQueueItem(row: InboxThreadRow): InboxQueueItem {
@@ -68,6 +75,13 @@ export async function getInboxBrainStatusAction(): Promise<InboxBrainStatus> {
       lastSyncError: null,
       threadsSynced: 0,
       queue: [],
+      stats: {
+        totalThreads: 0,
+        matchedLeads: 0,
+        needsReply: 0,
+        newInquiries: 0,
+        realConversations: 0,
+      },
     };
   }
 
@@ -91,6 +105,7 @@ export async function getInboxBrainStatusAction(): Promise<InboxBrainStatus> {
   };
 
   const queue = threads
+    .filter((t) => t.category !== "other" && t.urgencyScore > 0)
     .filter((t) => t.category !== "waiting_on_them" || t.urgencyScore >= 50)
     .sort((a, b) => {
       const catDiff =
@@ -101,12 +116,21 @@ export async function getInboxBrainStatusAction(): Promise<InboxBrainStatus> {
     .slice(0, 12)
     .map(mapQueueItem);
 
+  const actionable = threads.filter((t) => t.category !== "other" && t.urgencyScore > 0);
+
   return {
     gmailConnected: Boolean(connection),
     lastSyncedAt: syncStatus.lastSyncedAt,
     lastSyncError: syncStatus.lastSyncError,
-    threadsSynced: syncStatus.threadsSynced,
+    threadsSynced: syncStatus.threadsSynced || threads.length,
     queue,
+    stats: {
+      totalThreads: threads.length,
+      matchedLeads: threads.filter((t) => t.leadId).length,
+      needsReply: actionable.filter((t) => t.category === "needs_reply").length,
+      newInquiries: actionable.filter((t) => t.category === "new_inquiry").length,
+      realConversations: actionable.length,
+    },
   };
 }
 

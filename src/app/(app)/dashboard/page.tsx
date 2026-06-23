@@ -15,10 +15,13 @@ import { computeMetrics, computeRevenueAtRisk } from "@/lib/followups";
 import { relativeFromNow } from "@/lib/date";
 import { formatCurrency } from "@/lib/format";
 import { getInboxBrainStatusAction } from "@/app/actions/inbox";
+import { getGmailConnectionStatus } from "@/lib/gmail/connection";
+import { partitionLeadsForDashboard } from "@/lib/sample-leads";
 import { MetricCard } from "@/components/metric-card";
 import { FollowUpQueue } from "@/components/follow-up-queue";
 import { EmailBrainCard } from "@/components/email-brain-card";
-import { DashboardQuickActions } from "@/components/dashboard-empty-state";
+import { DashboardQuickActions } from "@/components/dashboard-quick-actions";
+import { SampleDataBanner } from "@/components/sample-data-banner";
 import { PipelineSnapshot } from "@/components/pipeline-snapshot";
 import { TodayFocus } from "@/components/today-focus";
 import { ComingUp } from "@/components/coming-up";
@@ -46,11 +49,22 @@ const ACTIVITY_ICON: Record<ActivityType, typeof Activity> = {
 export default async function DashboardPage() {
   const user = await requireUser();
   const repo = getRepository();
-  const [leads, activity, inboxBrain] = await Promise.all([
+  const [allLeads, activity, inboxBrain, gmailStatus] = await Promise.all([
     repo.listLeads(user.id),
     repo.listRecentActivity(user.id, 10),
     getInboxBrainStatusAction(),
+    getGmailConnectionStatus(user.id).catch(() => null),
   ]);
+
+  const hasGmailData =
+    inboxBrain.stats.totalThreads > 0 ||
+    (inboxBrain.gmailConnected && inboxBrain.lastSyncedAt != null);
+
+  const { leads, hiddenSampleCount, showRemoveSampleBanner } = partitionLeadsForDashboard(
+    allLeads,
+    { hasGmailData }
+  );
+
   const metrics = computeMetrics(leads);
   const revenue = computeRevenueAtRisk(leads);
   const firstName = (user.fullName ?? "there").split(" ")[0];
@@ -69,8 +83,14 @@ export default async function DashboardPage() {
               : "Turn warm leads into next conversations."}
           </p>
         </div>
-        <DashboardQuickActions hasLeads={hasLeads} />
+        <DashboardQuickActions
+          hasLeads={hasLeads}
+          gmailConnected={inboxBrain.gmailConnected}
+          gmailEmail={gmailStatus?.email}
+        />
       </div>
+
+      {showRemoveSampleBanner && <SampleDataBanner count={hiddenSampleCount} />}
 
       {hasLeads && <RevenueAtRiskBanner leads={leads} />}
 

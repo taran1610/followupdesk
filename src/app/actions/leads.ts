@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { getRepository } from "@/lib/data";
 import { todayISODate, addDaysISO } from "@/lib/date";
+import { buildSampleLeads, isSampleLead } from "@/lib/sample-leads";
 import type { LeadStatus, NewLeadInput, UpdateLeadInput } from "@/lib/types";
 
 export interface ActionResult {
@@ -141,64 +142,23 @@ export async function snoozeLeadAction(
   return updateLeadAction(leadId, { nextFollowUpDate: addDaysISO(today, days) });
 }
 
-function getSampleLeads(): NewLeadInput[] {
-  const today = todayISODate();
-  return [
-    {
-      name: "Sarah Johnson",
-      company: "Johnson Coaching",
-      email: "sarah@johnsoncoaching.com",
-      status: "Proposal sent",
-      source: "Referral",
-      dealValue: 2500,
-      notes: "Sent proposal 4 days ago. Waiting on sign-off from her partner.",
-      lastContactDate: addDaysISO(today, -4),
-      nextFollowUpDate: addDaysISO(today, -1),
-    },
-    {
-      name: "Mike Agency",
-      company: "Brightwave Marketing",
-      email: "mike@brightwave.io",
-      status: "Waiting",
-      source: "Website",
-      dealValue: 5500,
-      notes: "Interested in a retainer. No reply in 12 days.",
-      lastContactDate: addDaysISO(today, -12),
-      nextFollowUpDate: today,
-    },
-    {
-      name: "Alex Coach",
-      company: "Summit Wellness",
-      email: "alex@summitwellness.co",
-      status: "Discovery booked",
-      source: "Inbound",
-      dealValue: 4000,
-      notes: "Discovery call yesterday — send recap and next steps.",
-      lastContactDate: addDaysISO(today, -1),
-      nextFollowUpDate: today,
-    },
-    {
-      name: "Marcus Rivera",
-      company: "Rivera Studio",
-      email: "marcus@riverastudio.design",
-      status: "New",
-      source: "Inbound",
-      dealValue: 3500,
-      notes: "Filled out contact form asking about brand strategy coaching.",
-      nextFollowUpDate: today,
-    },
-    {
-      name: "Helen Marsh",
-      company: "Northpeak Consulting",
-      email: "helen@northpeak.com",
-      status: "Stale",
-      source: "Event",
-      dealValue: 12000,
-      notes: "High-value lead gone quiet after strong first call.",
-      lastContactDate: addDaysISO(today, -18),
-      nextFollowUpDate: addDaysISO(today, -3),
-    },
-  ];
+export async function removeSampleLeadsAction(): Promise<ActionResult & { count?: number }> {
+  const user = await requireUser();
+  const repo = getRepository();
+  const existing = await repo.listLeads(user.id);
+  const samples = existing.filter(isSampleLead);
+  if (samples.length === 0) {
+    return { ok: false, error: "No sample leads to remove." };
+  }
+  try {
+    for (const lead of samples) {
+      await repo.deleteLead(user.id, lead.id);
+    }
+    revalidateLead();
+    return { ok: true, count: samples.length };
+  } catch (err) {
+    return { ok: false, error: errorMessage(err) };
+  }
 }
 
 export async function loadSampleLeadsAction(): Promise<ActionResult & { count?: number }> {
@@ -209,7 +169,7 @@ export async function loadSampleLeadsAction(): Promise<ActionResult & { count?: 
     return { ok: false, error: "Sample leads are only available on an empty account." };
   }
   try {
-    const samples = getSampleLeads();
+    const samples = buildSampleLeads();
     for (const sample of samples) {
       await repo.createLead(user.id, sample);
     }

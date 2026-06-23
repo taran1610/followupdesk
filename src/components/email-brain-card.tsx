@@ -59,7 +59,7 @@ export function EmailBrainCard({ status }: { status: InboxBrainStatus }) {
       const result = await syncInboxAction();
       if (result.ok) {
         toast.success(
-          `Synced ${result.threadsSynced ?? 0} threads · ${result.needsReply ?? 0} need reply`
+          `Synced ${result.threadsSynced ?? 0} threads · ${result.needsReply ?? 0} need reply · ${result.newInquiries ?? 0} new inquiries`
         );
         router.refresh();
       } else {
@@ -118,9 +118,17 @@ export function EmailBrainCard({ status }: { status: InboxBrainStatus }) {
             Email Brain
           </CardTitle>
           <CardDescription>
-            {status.lastSyncedAt
-              ? `Last synced ${relativeFromNow(status.lastSyncedAt)} · ${status.threadsSynced} threads`
-              : "Sync your inbox to categorize leads and draft follow-ups."}
+            {status.lastSyncedAt ? (
+              <>
+                Last synced {relativeFromNow(status.lastSyncedAt)} ·{" "}
+                {status.stats.totalThreads} threads in Gmail ·{" "}
+                {status.stats.realConversations} real conversations
+                {status.stats.matchedLeads > 0 &&
+                  ` · ${status.stats.matchedLeads} matched to leads`}
+              </>
+            ) : (
+              "Sync your inbox to categorize leads and draft follow-ups."
+            )}
           </CardDescription>
         </div>
         <Button variant="outline" size="sm" onClick={handleSync} disabled={isPending}>
@@ -133,6 +141,24 @@ export function EmailBrainCard({ status }: { status: InboxBrainStatus }) {
         </Button>
       </CardHeader>
       <CardContent className="space-y-4">
+        {status.lastSyncedAt && status.stats.totalThreads > 0 && (
+          <div className="flex flex-wrap gap-2 text-sm">
+            <Badge variant="outline">{status.stats.totalThreads} synced</Badge>
+            {status.stats.needsReply > 0 && (
+              <Badge variant="destructive">{status.stats.needsReply} need reply</Badge>
+            )}
+            {status.stats.newInquiries > 0 && (
+              <Badge variant="secondary">{status.stats.newInquiries} new inquiries</Badge>
+            )}
+            {status.stats.realConversations === 0 && (
+              <span className="text-muted-foreground">
+                Most synced threads are newsletters or automated — add leads with matching
+                emails to see CRM matches.
+              </span>
+            )}
+          </div>
+        )}
+
         {status.lastSyncError && (
           <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
             {status.lastSyncError}
@@ -141,9 +167,20 @@ export function EmailBrainCard({ status }: { status: InboxBrainStatus }) {
 
         {status.queue.length === 0 ? (
           <div className="text-muted-foreground rounded-lg border border-dashed px-4 py-8 text-center text-sm">
-            {status.lastSyncedAt
-              ? "No threads need attention right now. Nice work."
-              : "Click Sync inbox to analyze your recent Gmail threads."}
+            {status.lastSyncedAt ? (
+              status.stats.realConversations === 0 ? (
+                <>
+                  Gmail sync is working — {status.stats.totalThreads} threads imported.
+                  <br />
+                  No person-to-person conversations need follow-up yet. Try emailing a lead
+                  from Gmail, or add leads whose email matches your inbox.
+                </>
+              ) : (
+                "No threads need attention right now. Nice work."
+              )
+            ) : (
+              "Click Sync inbox to analyze your recent Gmail threads."
+            )}
           </div>
         ) : (
           <ul className="divide-y rounded-lg border">

@@ -67,7 +67,9 @@ export async function syncInboxForUser(userId: string): Promise<SyncInboxResult>
   return {
     threadsSynced: count,
     needsReply: withDrafts.filter((t) => t.category === "needs_reply").length,
-    newInquiries: withDrafts.filter((t) => t.category === "new_inquiry").length,
+    newInquiries: withDrafts.filter(
+      (t) => t.category === "new_inquiry" && t.urgencyScore > 0
+    ).length,
   };
 }
 

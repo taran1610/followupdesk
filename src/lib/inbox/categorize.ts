@@ -1,6 +1,7 @@
 import "server-only";
 import type { Lead } from "@/lib/types";
 import type { ParsedGmailThread } from "@/lib/gmail/read";
+import { isAutomatedSender } from "@/lib/inbox/filter";
 
 export const INBOX_CATEGORIES = [
   "needs_reply",
@@ -40,6 +41,14 @@ export function categorizeThread(
   now: Date = new Date()
 ): Pick<CategorizedThread, "category" | "categoryReason" | "urgencyScore"> {
   const daysSince = daysSinceDate(thread.lastMessageAt, now);
+
+  if (isAutomatedSender(thread.counterpartyEmail)) {
+    return {
+      category: "other",
+      categoryReason: "Newsletter or automated message — skipped",
+      urgencyScore: 0,
+    };
+  }
 
   if (!lead && thread.direction === "inbound") {
     return {
@@ -143,6 +152,7 @@ export function buildInboxQueue(threads: CategorizedThread[]): CategorizedThread
   ];
 
   return [...threads]
+    .filter((t) => t.urgencyScore > 0 && t.category !== "other")
     .filter((t) => t.category !== "waiting_on_them" || t.urgencyScore >= 50)
     .sort((a, b) => {
       const catDiff =

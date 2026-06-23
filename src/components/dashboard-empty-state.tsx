@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { Loader2, Mail, Plus, Sparkles, Users } from "lucide-react";
+import { Loader2, Mail, Plus, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { LeadFormDialog } from "@/components/lead-form-dialog";
@@ -56,48 +55,6 @@ export function DashboardEmptyState() {
       <p className="text-muted-foreground mt-4 text-xs">
         Sample data includes Sarah — proposal overdue, Mike — no reply in 12 days, and more.
       </p>
-    </div>
-  );
-}
-
-export function DashboardQuickActions({ hasLeads }: { hasLeads: boolean }) {
-  return (
-    <div className="flex flex-wrap gap-2">
-      <LeadFormDialog
-        trigger={
-          <Button size="sm" variant="outline">
-            <Plus className="size-4" />
-            Add lead
-          </Button>
-        }
-      />
-      <form action={connectGmailAction}>
-        <Button size="sm" variant="outline" type="submit">
-          <Mail className="size-4" />
-          Connect Gmail
-        </Button>
-      </form>
-      {hasLeads && (
-        <Button
-          size="sm"
-          variant="outline"
-          nativeButton={false}
-          render={<Link href="/leads" />}
-        >
-          View stale leads
-        </Button>
-      )}
-      {hasLeads && (
-        <Button
-          size="sm"
-          variant="outline"
-          nativeButton={false}
-          render={<Link href="/leads" />}
-        >
-          <Sparkles className="size-4" />
-          Draft follow-up
-        </Button>
-      )}
     </div>
   );
 }
