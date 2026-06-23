@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Loader2, Mail, Unplug } from "lucide-react";
+import { CheckCircle2, Loader2, Mail, RefreshCw, Unplug } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,12 +28,6 @@ export function GmailConnectCard({
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-
-  function handleConnect() {
-    startTransition(async () => {
-      await connectGmailAction();
-    });
-  }
 
   function handleDisconnect() {
     startTransition(async () => {
@@ -84,14 +78,25 @@ export function GmailConnectCard({
                 )}
               </div>
             </div>
-            <Button variant="outline" onClick={handleDisconnect} disabled={isPending}>
-              {isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Unplug className="size-4" />
-              )}
-              Disconnect Gmail
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <form action={connectGmailAction}>
+                <Button type="submit" variant="outline" disabled={isPending}>
+                  <RefreshCw className="size-4" />
+                  Reconnect Gmail
+                </Button>
+              </form>
+              <Button variant="outline" onClick={handleDisconnect} disabled={isPending}>
+                {isPending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Unplug className="size-4" />
+                )}
+                Disconnect
+              </Button>
+            </div>
+            <p className="text-muted-foreground text-xs">
+              Use Reconnect if inbox sync fails — it refreshes read + send permissions.
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -99,14 +104,12 @@ export function GmailConnectCard({
               Approve read + send access once. We sync recent threads to categorize
               leads and draft follow-ups — you click Send when ready.
             </p>
-            <Button onClick={handleConnect} disabled={isPending}>
-              {isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
+            <form action={connectGmailAction}>
+              <Button type="submit">
                 <Mail className="size-4" />
-              )}
-              Connect Gmail
-            </Button>
+                Connect Gmail
+              </Button>
+            </form>
           </div>
         )}
       </CardContent>

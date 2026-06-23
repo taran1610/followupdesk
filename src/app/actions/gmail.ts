@@ -36,7 +36,7 @@ export async function getGmailStatusAction(): Promise<GmailStatus> {
     };
   }
 
-  const connection = await getGmailConnectionStatus(user.id);
+  const connection = await getGmailConnectionStatus(user.id).catch(() => null);
   return {
     configured: true,
     connected: Boolean(connection),
@@ -58,7 +58,7 @@ export async function connectGmailAction(): Promise<void> {
     provider: "google",
     options: {
       scopes: GMAIL_OAUTH_SCOPES,
-      redirectTo: `${appOrigin()}/auth/callback?gmail=connect`,
+      redirectTo: `${appOrigin()}/auth/callback/gmail`,
       queryParams: {
         access_type: "offline",
         prompt: "consent",

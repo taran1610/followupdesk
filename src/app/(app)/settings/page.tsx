@@ -16,7 +16,13 @@ function bannerFromSearchParams(
   gmail?: string,
   reason?: string
 ): string | null {
-  if (reason) return decodeURIComponent(reason);
+  if (reason) {
+    try {
+      return decodeURIComponent(reason);
+    } catch {
+      return reason;
+    }
+  }
   if (!gmail) return null;
   if (gmail === "error") return "Could not connect Gmail. Please try again.";
   return BANNERS[gmail] ?? null;
