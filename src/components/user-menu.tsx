@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/app/actions/auth";
 import type { AuthUser } from "@/lib/types";
-import { AppNav, NAV_ITEMS } from "@/components/app-nav";
+import { AppNav } from "@/components/app-nav";
 import Link from "next/link";
 
 function initials(user: AuthUser): string {
@@ -60,7 +60,7 @@ export function UserMenu({ user }: { user: AuthUser }) {
   );
 }
 
-export function MobileNavMenu() {
+export function MobileNavMenu({ inboxBadge }: { inboxBadge?: number }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -69,17 +69,8 @@ export function MobileNavMenu() {
         <Menu className="size-5" />
         <span className="sr-only">Open navigation</span>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-48">
-        {NAV_ITEMS.map((item) => (
-          <DropdownMenuItem
-            key={item.href}
-            className="cursor-pointer"
-            render={<Link href={item.href} />}
-          >
-            <item.icon className="size-4" />
-            {item.label}
-          </DropdownMenuItem>
-        ))}
+      <DropdownMenuContent align="start" className="w-52 p-2">
+        <AppNav badges={{ inbox: inboxBadge }} />
       </DropdownMenuContent>
     </DropdownMenu>
   );

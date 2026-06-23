@@ -9,7 +9,7 @@ import { LeadFormDialog } from "@/components/lead-form-dialog";
 import { connectGmailAction } from "@/app/actions/gmail";
 import { loadSampleLeadsAction } from "@/app/actions/leads";
 
-export function DashboardEmptyState() {
+export function DashboardEmptyState({ gmailConnected = false }: { gmailConnected?: boolean }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -45,12 +45,14 @@ export function DashboardEmptyState() {
             </Button>
           }
         />
-        <form action={connectGmailAction}>
-          <Button type="submit" variant="outline">
-            <Mail className="size-4" />
-            Connect Gmail
-          </Button>
-        </form>
+        {!gmailConnected && (
+          <form action={connectGmailAction}>
+            <Button type="submit" variant="outline">
+              <Mail className="size-4" />
+              Connect Gmail
+            </Button>
+          </form>
+        )}
       </div>
       <p className="text-muted-foreground mt-4 text-xs">
         Sample data includes Sarah — proposal overdue, Mike — no reply in 12 days, and more.

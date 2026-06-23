@@ -45,6 +45,8 @@ export interface InboxBrainStatus {
     needsReply: number;
     newInquiries: number;
     realConversations: number;
+    waitingOnThem: number;
+    goneQuiet: number;
   };
 }
 
@@ -81,6 +83,8 @@ export async function getInboxBrainStatusAction(): Promise<InboxBrainStatus> {
         needsReply: 0,
         newInquiries: 0,
         realConversations: 0,
+        waitingOnThem: 0,
+        goneQuiet: 0,
       },
     };
   }
@@ -130,6 +134,8 @@ export async function getInboxBrainStatusAction(): Promise<InboxBrainStatus> {
       needsReply: actionable.filter((t) => t.category === "needs_reply").length,
       newInquiries: actionable.filter((t) => t.category === "new_inquiry").length,
       realConversations: actionable.length,
+      waitingOnThem: actionable.filter((t) => t.category === "waiting_on_them").length,
+      goneQuiet: actionable.filter((t) => t.category === "gone_quiet").length,
     },
   };
 }

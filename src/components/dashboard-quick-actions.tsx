@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { Check, Loader2, Mail, Plus, RefreshCw, Sparkles } from "lucide-react";
+import { Loader2, Mail, Plus, RefreshCw, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { LeadFormDialog } from "@/components/lead-form-dialog";
@@ -38,28 +38,13 @@ export function DashboardQuickActions({
     <div className="flex flex-wrap items-center gap-2">
       <LeadFormDialog
         trigger={
-          <Button size="sm" variant="outline">
+          <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
             <Plus className="size-4" />
             Add lead
           </Button>
         }
       />
-      {gmailConnected ? (
-        <>
-          <span className="text-muted-foreground inline-flex items-center gap-1.5 rounded-md border bg-muted/40 px-2.5 py-1 text-xs">
-            <Check className="size-3.5 text-emerald-600" />
-            Gmail: {gmailEmail ?? "connected"}
-          </span>
-          <Button size="sm" variant="outline" onClick={handleSync} disabled={isPending}>
-            {isPending ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <RefreshCw className="size-4" />
-            )}
-            Sync inbox
-          </Button>
-        </>
-      ) : (
+      {!gmailConnected && (
         <form action={connectGmailAction}>
           <Button size="sm" variant="outline" type="submit">
             <Mail className="size-4" />
@@ -67,12 +52,22 @@ export function DashboardQuickActions({
           </Button>
         </form>
       )}
+      {gmailConnected && (
+        <Button size="sm" variant="outline" onClick={handleSync} disabled={isPending}>
+          {isPending ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <RefreshCw className="size-4" />
+          )}
+          Sync inbox
+        </Button>
+      )}
       {hasLeads && (
         <Button
           size="sm"
           variant="outline"
           nativeButton={false}
-          render={<Link href="/leads" />}
+          render={<Link href="/leads?filter=stale" />}
         >
           View stale leads
         </Button>
