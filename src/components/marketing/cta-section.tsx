@@ -1,40 +1,32 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export function CtaSection() {
   return (
-    <section className="border-t py-20 md:py-24">
-      <div className="mx-auto max-w-6xl px-4 md:px-8">
-        <div className="bg-primary text-primary-foreground relative overflow-hidden rounded-2xl px-6 py-14 text-center md:px-12">
-          <div className="bg-brand/20 pointer-events-none absolute -top-24 -right-24 size-64 rounded-full blur-3xl" />
-          <h2 className="relative text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+    <section className="px-4 py-16 md:px-8 md:py-20">
+      <div className="mx-auto max-w-6xl">
+        <div className="rounded-[2rem] bg-zinc-950 px-6 py-14 text-center text-white md:px-16 md:py-16">
+          <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
             Ready to stop losing warm leads?
           </h2>
-          <p className="text-primary-foreground/80 relative mx-auto mt-4 max-w-xl text-lg">
+          <p className="mx-auto mt-4 max-w-xl text-lg text-zinc-400">
             Create a free account, connect Gmail, and start following up from one calm
             workspace.
           </p>
-          <div className="relative mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button
-              size="lg"
-              variant="secondary"
-              className="h-11"
-              nativeButton={false}
-              render={<Link href="/signup" />}
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              href="/signup"
+              className="marketing-pill-btn inline-flex h-11 items-center gap-2 bg-white px-6 text-zinc-950 hover:bg-zinc-100"
             >
               Create free account
               <ArrowRight className="size-4" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-primary-foreground/25 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 h-11"
-              nativeButton={false}
-              render={<Link href="/login" />}
+            </Link>
+            <Link
+              href="/login"
+              className="marketing-pill-btn inline-flex h-11 items-center border border-white/25 bg-transparent px-6 text-white hover:bg-white/10"
             >
               Sign in
-            </Button>
+            </Link>
           </div>
         </div>
       </div>

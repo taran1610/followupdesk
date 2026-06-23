@@ -2,34 +2,41 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { PaidPlanId } from "@/lib/billing/plans";
+import { cn } from "@/lib/utils";
 
 export function PricingPlanButton({
   planId,
   label,
   variant = "default",
   stripeEnabled,
+  highlighted = false,
 }: {
   planId: "solo" | PaidPlanId;
   label: string;
   variant?: "default" | "outline";
   stripeEnabled: boolean;
+  highlighted?: boolean;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const pillClass = cn(
+    "marketing-pill-btn w-full",
+    highlighted
+      ? "bg-white text-zinc-950 hover:bg-zinc-100"
+      : variant === "default"
+        ? "marketing-pill-btn-primary"
+        : "marketing-pill-btn-outline border-[#e8e4dc] bg-[#faf8f5] hover:bg-[#f7f4ef]"
+  );
+
   if (planId === "solo" || !stripeEnabled) {
     return (
-      <Button
-        className="w-full"
-        variant={variant}
-        nativeButton={false}
-        render={<Link href="/signup" />}
-      >
+      <Link href="/signup" className={pillClass}>
         {label}
-      </Button>
+      </Link>
     );
   }
 
@@ -58,8 +65,8 @@ export function PricingPlanButton({
   return (
     <div className="w-full space-y-2">
       <Button
-        className="w-full"
-        variant={variant}
+        className={cn("h-10 w-full rounded-full", highlighted && "bg-white text-zinc-950 hover:bg-zinc-100")}
+        variant={highlighted ? "secondary" : variant}
         onClick={handleCheckout}
         disabled={loading}
       >

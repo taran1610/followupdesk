@@ -16,7 +16,7 @@ export const PRICING_PLANS = [
     features: [
       "Up to 50 active leads",
       "Follow-up queue & reminders",
-      "AI draft messages (mock or OpenAI)",
+      "AI draft messages",
       "Notes & pipeline statuses",
     ],
   },
@@ -31,7 +31,7 @@ export const PRICING_PLANS = [
     features: [
       "Unlimited leads",
       "Priority follow-up scoring",
-      "Send follow-ups from your Gmail",
+      "Send from your Gmail",
       "Supabase sync & backups",
       "Export & activity history",
     ],
@@ -64,49 +64,58 @@ export function PricingSection({
   const stripeEnabled = isStripeConfigured();
 
   return (
-    <section id="pricing" className={cn("scroll-mt-20 py-20 md:py-28", className)}>
-      <div className="mx-auto max-w-6xl px-4 md:px-8">
+    <section id="pricing" className={cn("scroll-mt-24 px-4 py-16 md:px-8 md:py-24", className)}>
+      <div className="mx-auto max-w-6xl">
         {showHeader && (
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-brand text-sm font-medium">Pricing</p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+            <p className="marketing-label">Pricing</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">
               Simple plans that grow with you
             </h2>
-            <p className="text-muted-foreground mt-4 text-lg">
+            <p className="mt-4 text-lg text-[#6b6560]">
               Start free, then upgrade to Pro or Agency when you&apos;re ready.
             </p>
           </div>
         )}
 
-        <div className="mt-14 grid gap-6 lg:grid-cols-3">
+        <div className="mt-12 grid gap-5 lg:grid-cols-3">
           {PRICING_PLANS.map((plan) => (
             <article
               key={plan.id}
               className={cn(
-                "relative flex flex-col rounded-2xl border p-6 shadow-sm",
+                "relative flex flex-col rounded-3xl border p-7 md:p-8",
                 plan.highlighted
-                  ? "border-brand/40 bg-brand/[0.03] ring-brand/20 ring-1"
-                  : "border-border/80 bg-card"
+                  ? "border-zinc-950 bg-zinc-950 text-white shadow-xl"
+                  : "border-[#e8e4dc] bg-white"
               )}
             >
               {plan.highlighted && (
-                <span className="bg-brand text-brand-foreground absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-0.5 text-xs font-medium">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-white px-3 py-1 text-[10px] font-semibold tracking-wide text-zinc-950 uppercase">
                   Most popular
                 </span>
               )}
               <div>
                 <h3 className="text-lg font-semibold">{plan.name}</h3>
-                <p className="text-muted-foreground mt-1 text-sm">{plan.description}</p>
-                <p className="mt-5 flex items-baseline gap-1">
+                <p className={cn("mt-1 text-sm", plan.highlighted ? "text-zinc-400" : "text-[#6b6560]")}>
+                  {plan.description}
+                </p>
+                <p className="mt-6 flex items-baseline gap-2">
                   <span className="text-4xl font-semibold tracking-tight">{plan.price}</span>
-                  <span className="text-muted-foreground text-sm">{plan.period}</span>
+                  <span className={cn("text-sm", plan.highlighted ? "text-zinc-400" : "text-[#6b6560]")}>
+                    {plan.period}
+                  </span>
                 </p>
               </div>
               <ul className="mt-6 flex-1 space-y-3">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex gap-2 text-sm">
-                    <Check className="text-brand mt-0.5 size-4 shrink-0" />
-                    <span>{feature}</span>
+                  <li key={feature} className="flex gap-2.5 text-sm">
+                    <Check
+                      className={cn(
+                        "mt-0.5 size-4 shrink-0",
+                        plan.highlighted ? "text-white" : "text-zinc-950"
+                      )}
+                    />
+                    <span className={plan.highlighted ? "text-zinc-200" : undefined}>{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -116,6 +125,7 @@ export function PricingSection({
                   label={plan.cta}
                   variant={plan.highlighted ? "default" : "outline"}
                   stripeEnabled={stripeEnabled}
+                  highlighted={plan.highlighted}
                 />
               </div>
             </article>
@@ -123,9 +133,9 @@ export function PricingSection({
         </div>
 
         {!stripeEnabled && (
-          <p className="text-muted-foreground mt-8 text-center text-sm">
+          <p className="mt-8 text-center text-sm text-[#6b6560]">
             Paid plans use Stripe. Add your Stripe keys to enable checkout, or{" "}
-            <Link href="/signup" className="text-foreground underline-offset-4 hover:underline">
+            <Link href="/signup" className="font-medium text-zinc-950 underline-offset-4 hover:underline">
               start free
             </Link>
             .

@@ -11,10 +11,12 @@ export default function PricingPage() {
   return (
     <>
       <div className="mx-auto max-w-6xl px-4 pt-16 pb-4 text-center md:px-8 md:pt-20">
-        <h1 className="text-4xl font-semibold tracking-tight">Pricing</h1>
-        <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-lg">
-          Start free during beta. Pay when you need persistence, email, and team
-          features.
+        <p className="marketing-label">Pricing</p>
+        <h1 className="mt-3 text-4xl font-semibold tracking-tight text-zinc-950">
+          Simple plans that grow with you
+        </h1>
+        <p className="mx-auto mt-4 max-w-xl text-lg text-[#6b6560]">
+          Start free, then upgrade when you need Gmail sending and unlimited leads.
         </p>
       </div>
       <PricingSection showHeader={false} />

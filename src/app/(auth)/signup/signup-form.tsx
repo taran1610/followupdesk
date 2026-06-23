@@ -7,26 +7,22 @@ import { Loader2 } from "lucide-react";
 import { signUp, type AuthState } from "@/app/actions/auth";
 import { GoogleSignInButton } from "@/components/google-sign-in-button";
 import { APP_NAME, APP_TAGLINE } from "@/lib/config";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 const initialState: AuthState = {};
 
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" className="w-full" disabled={pending}>
+    <button
+      type="submit"
+      disabled={pending}
+      className="marketing-pill-btn marketing-pill-btn-primary flex w-full items-center justify-center gap-2 disabled:opacity-60"
+    >
       {pending && <Loader2 className="size-4 animate-spin" />}
       Create account with email
-    </Button>
+    </button>
   );
 }
 
@@ -38,17 +34,15 @@ export function SignupForm({ authConfigured }: { authConfigured: boolean }) {
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
           <h1 className="text-xl font-semibold tracking-tight">{APP_NAME}</h1>
-          <p className="text-muted-foreground mt-1 text-sm">{APP_TAGLINE}</p>
+          <p className="mt-1 text-sm text-[#6b6560]">{APP_TAGLINE}</p>
         </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Sign-up unavailable</CardTitle>
-            <CardDescription>
-              Authentication is not configured on this server. Contact the site
-              administrator.
-            </CardDescription>
-          </CardHeader>
-        </Card>
+        <div className="marketing-card w-full">
+          <h2 className="text-lg font-semibold text-zinc-950">Sign-up unavailable</h2>
+          <p className="mt-2 text-sm text-[#6b6560]">
+            Authentication is not configured on this server. Contact the site
+            administrator.
+          </p>
+        </div>
       </div>
     );
   }
@@ -57,21 +51,22 @@ export function SignupForm({ authConfigured }: { authConfigured: boolean }) {
     <div className="w-full max-w-sm space-y-6">
       <div className="text-center">
         <h1 className="text-xl font-semibold tracking-tight">{APP_NAME}</h1>
-        <p className="text-muted-foreground mt-1 text-sm">{APP_TAGLINE}</p>
+        <p className="mt-1 text-sm text-[#6b6560]">{APP_TAGLINE}</p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Create your account</CardTitle>
-          <CardDescription>Sign up with Google or your email to save your pipeline.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <div className="marketing-card w-full">
+        <h2 className="text-lg font-semibold text-zinc-950">Create your account</h2>
+        <p className="mt-1 text-sm text-[#6b6560]">
+          Sign up with Google or your email to save your pipeline.
+        </p>
+
+        <div className="mt-6 space-y-4">
           <GoogleSignInButton label="Sign up with Google" />
 
           <div className="flex items-center gap-3">
-            <span className="bg-border h-px flex-1" />
-            <span className="text-muted-foreground text-xs">or continue with email</span>
-            <span className="bg-border h-px flex-1" />
+            <span className="h-px flex-1 bg-[#e8e4dc]" />
+            <span className="text-xs text-[#6b6560]">or continue with email</span>
+            <span className="h-px flex-1 bg-[#e8e4dc]" />
           </div>
 
           <form action={formAction} className="space-y-4">
@@ -112,14 +107,14 @@ export function SignupForm({ authConfigured }: { authConfigured: boolean }) {
             <SubmitButton />
           </form>
 
-          <p className="text-muted-foreground text-center text-sm">
+          <p className="text-center text-sm text-[#6b6560]">
             Already have an account?{" "}
-            <Link href="/login" className="text-foreground font-medium underline-offset-4 hover:underline">
+            <Link href="/login" className="font-medium text-zinc-950 underline-offset-4 hover:underline">
               Sign in
             </Link>
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

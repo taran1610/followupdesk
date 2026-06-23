@@ -7,26 +7,22 @@ import { Loader2 } from "lucide-react";
 import { signIn, type AuthState } from "@/app/actions/auth";
 import { GoogleSignInButton } from "@/components/google-sign-in-button";
 import { APP_NAME, APP_TAGLINE } from "@/lib/config";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 const initialState: AuthState = {};
 
 function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" className="w-full" disabled={pending}>
+    <button
+      type="submit"
+      disabled={pending}
+      className="marketing-pill-btn marketing-pill-btn-primary flex w-full items-center justify-center gap-2 disabled:opacity-60"
+    >
       {pending && <Loader2 className="size-4 animate-spin" />}
       {label}
-    </Button>
+    </button>
   );
 }
 
@@ -47,15 +43,13 @@ export function LoginForm({
           <h1 className="text-xl font-semibold tracking-tight">{APP_NAME}</h1>
           <p className="text-muted-foreground mt-1 text-sm">{APP_TAGLINE}</p>
         </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Sign-in unavailable</CardTitle>
-            <CardDescription>
-              Authentication is not configured on this server. Contact the site
-              administrator.
-            </CardDescription>
-          </CardHeader>
-        </Card>
+        <div className="marketing-card w-full max-w-sm">
+          <h2 className="text-lg font-semibold text-zinc-950">Sign-in unavailable</h2>
+          <p className="mt-2 text-sm text-[#6b6560]">
+            Authentication is not configured on this server. Contact the site
+            administrator.
+          </p>
+        </div>
       </div>
     );
   }
@@ -67,12 +61,13 @@ export function LoginForm({
         <p className="text-muted-foreground mt-1 text-sm">{APP_TAGLINE}</p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Sign in</CardTitle>
-          <CardDescription>Welcome back. Sign in with Google or your email.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <div className="marketing-card w-full">
+        <h2 className="text-lg font-semibold text-zinc-950">Sign in</h2>
+        <p className="mt-1 text-sm text-[#6b6560]">
+          Welcome back. Sign in with Google or your email.
+        </p>
+
+        <div className="mt-6 space-y-4">
           <GoogleSignInButton />
 
           <div className="flex items-center gap-3">
@@ -120,8 +115,8 @@ export function LoginForm({
               Create an account
             </Link>
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

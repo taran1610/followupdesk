@@ -1,93 +1,70 @@
-import { AlarmClock, Flame, Inbox, Snowflake, Users } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
-/** Static product mock for the marketing page — mirrors the real dashboard UI. */
-export function ProductPreview() {
+const QUEUE_LEADS = [
+  { name: "Amara Okafor", note: "Proposal sent — 1d overdue", badge: "Hot", badgeClass: "bg-zinc-950 text-white" },
+  { name: "Diego Santos", note: "Follow-up due today", badge: "Warm", badgeClass: "bg-[#e8e4dc] text-zinc-800" },
+  { name: "Marcus Rivera", note: "New inbound — reach out fast", badge: "New", badgeClass: "bg-[#f7f4ef] text-zinc-700 border border-[#e8e4dc]" },
+];
+
+/** Compact app mock for the hero — mirrors the real dashboard UI. */
+export function HeroProductPreview() {
   return (
-    <section className="border-t py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-4 md:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="text-brand text-sm font-medium">Inside the app</p>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-            Your morning follow-up ritual, in one screen
-          </h2>
-          <p className="text-muted-foreground mt-4 text-lg">
-            Open the dashboard, work the queue, log touches. No clutter.
-          </p>
+    <div className="relative mx-auto w-full max-w-md lg:max-w-none">
+      <div className="overflow-hidden rounded-3xl border border-[#e8e4dc] bg-white shadow-[0_24px_80px_-24px_rgba(0,0,0,0.12)]">
+        <div className="flex items-center gap-2 border-b border-[#e8e4dc] bg-[#faf8f5] px-4 py-3">
+          <div className="flex gap-1.5">
+            <span className="size-2 rounded-full bg-[#e8e4dc]" />
+            <span className="size-2 rounded-full bg-[#e8e4dc]" />
+            <span className="size-2 rounded-full bg-[#e8e4dc]" />
+          </div>
+          <span className="ml-1 text-xs text-[#6b6560]">app.followupdesk.com</span>
         </div>
 
-        <div className="border-border/80 bg-card mt-14 overflow-hidden rounded-2xl border shadow-xl">
-          <div className="border-border/60 bg-muted/50 flex items-center gap-2 border-b px-4 py-3">
-            <div className="flex gap-1.5">
-              <span className="bg-border size-2.5 rounded-full" />
-              <span className="bg-border size-2.5 rounded-full" />
-              <span className="bg-border size-2.5 rounded-full" />
+        <div className="p-5 md:p-6">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="marketing-label">Today</p>
+              <p className="mt-1 text-lg font-semibold text-zinc-950">Follow up now</p>
             </div>
-            <span className="text-muted-foreground ml-2 text-xs">app.followupdesk.com/dashboard</span>
+            <span className="rounded-full bg-zinc-950 px-3 py-1 text-xs font-medium text-white">
+              3 due
+            </span>
           </div>
 
-          <div className="flex min-h-[420px]">
-            <aside className="bg-sidebar hidden w-44 shrink-0 border-r p-3 md:block">
-              <div className="mb-4 flex items-center gap-2 px-1">
-                <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-                  <Inbox className="size-3" />
+          <ul className="mt-5 space-y-2">
+            {QUEUE_LEADS.map((lead) => (
+              <li
+                key={lead.name}
+                className="flex items-center justify-between gap-3 rounded-2xl border border-[#e8e4dc] px-4 py-3"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-zinc-950">{lead.name}</p>
+                  <p className="truncate text-xs text-[#6b6560]">{lead.note}</p>
                 </div>
-                <span className="text-xs font-semibold">Follow-Up Desk</span>
-              </div>
-              <div className="space-y-1">
-                <div className="bg-sidebar-accent rounded-md px-2 py-1.5 text-xs font-medium">
-                  Dashboard
-                </div>
-                <div className="text-muted-foreground rounded-md px-2 py-1.5 text-xs">
-                  Leads
-                </div>
-              </div>
-            </aside>
+                <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-medium ${lead.badgeClass}`}>
+                  {lead.badge}
+                </span>
+              </li>
+            ))}
+          </ul>
 
-            <div className="flex-1 p-4 md:p-6">
-              <p className="text-lg font-semibold">Welcome back, Jamie</p>
-              <p className="text-muted-foreground text-sm">Turn warm leads into next conversations.</p>
-
-              <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-                {[
-                  { label: "Total leads", value: "24", icon: Users },
-                  { label: "Hot leads", value: "5", icon: Flame },
-                  { label: "Needs follow-up", value: "3", icon: AlarmClock },
-                  { label: "Stale", value: "2", icon: Snowflake },
-                ].map((m) => (
-                  <div key={m.label} className="border-border/80 rounded-lg border p-3">
-                    <p className="text-muted-foreground text-[10px]">{m.label}</p>
-                    <p className="mt-1 text-xl font-semibold tabular-nums">{m.value}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-5">
-                <p className="mb-2 text-sm font-semibold">Follow up now</p>
-                <div className="divide-y rounded-lg border">
-                  {[
-                    { name: "Amara Okafor", note: "Proposal sent — 1d overdue", status: "Proposal sent" },
-                    { name: "Diego Santos", note: "Follow-up due today", status: "Contacted" },
-                    { name: "Marcus Rivera", note: "New inbound — reach out fast", status: "New" },
-                  ].map((lead) => (
-                    <div
-                      key={lead.name}
-                      className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm"
-                    >
-                      <div>
-                        <p className="font-medium">{lead.name}</p>
-                        <p className="text-muted-foreground text-xs">{lead.note}</p>
-                      </div>
-                      <span className="bg-muted text-muted-foreground hidden rounded-md px-2 py-0.5 text-[10px] font-medium sm:inline">
-                        {lead.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+          <div className="mt-4 rounded-2xl border border-[#e8e4dc] bg-[#faf8f5] p-4">
+            <div className="flex items-center gap-2 text-xs font-medium text-[#6b6560]">
+              <Sparkles className="size-3.5" />
+              AI draft
             </div>
+            <p className="mt-2 text-sm leading-relaxed text-zinc-800">
+              Hi Amara — circling back on the proposal. Happy to walk through any
+              questions on a quick call this week…
+            </p>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
+}
+
+/** Legacy export kept for any imports — hero uses HeroProductPreview directly. */
+export function ProductPreview() {
+  return null;
 }

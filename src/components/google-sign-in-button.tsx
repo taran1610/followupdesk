@@ -1,5 +1,4 @@
 import { signInWithGoogle } from "@/app/actions/auth";
-import { Button } from "@/components/ui/button";
 
 function GoogleIcon() {
   return (
@@ -27,10 +26,13 @@ function GoogleIcon() {
 export function GoogleSignInButton({ label = "Continue with Google" }: { label?: string }) {
   return (
     <form action={signInWithGoogle}>
-      <Button type="submit" variant="outline" className="w-full">
+      <button
+        type="submit"
+        className="marketing-pill-btn marketing-pill-btn-outline flex w-full items-center justify-center gap-2 border-[#e8e4dc] bg-white"
+      >
         <GoogleIcon />
         {label}
-      </Button>
+      </button>
     </form>
   );
 }

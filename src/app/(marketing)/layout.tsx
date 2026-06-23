@@ -10,7 +10,7 @@ export default async function MarketingLayout({
   const user = await getCurrentUser();
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="marketing-shell flex min-h-dvh flex-col">
       <SiteHeader user={user} />
       <main className="flex-1">{children}</main>
       <SiteFooter />

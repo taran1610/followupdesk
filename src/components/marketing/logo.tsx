@@ -1,25 +1,34 @@
 import Link from "next/link";
-import { Inbox } from "lucide-react";
+import { Mail } from "lucide-react";
 import { APP_NAME } from "@/lib/config";
 import { cn } from "@/lib/utils";
 
 export function Logo({
   className,
   showText = true,
+  inverted = false,
 }: {
   className?: string;
   showText?: boolean;
+  inverted?: boolean;
 }) {
   return (
     <Link
       href="/"
       className={cn("flex items-center gap-2.5 transition-opacity hover:opacity-80", className)}
     >
-      <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-lg shadow-sm">
-        <Inbox className="size-4" />
+      <div
+        className={cn(
+          "flex size-8 items-center justify-center rounded-lg",
+          inverted ? "bg-white text-zinc-950" : "bg-zinc-950 text-white"
+        )}
+      >
+        <Mail className="size-4" />
       </div>
       {showText && (
-        <span className="text-base font-semibold tracking-tight">{APP_NAME}</span>
+        <span className={cn("text-base font-semibold tracking-tight", inverted && "text-white")}>
+          {APP_NAME}
+        </span>
       )}
     </Link>
   );

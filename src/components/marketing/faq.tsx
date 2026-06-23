@@ -1,3 +1,9 @@
+"use client";
+
+import { useState } from "react";
+import { Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
+
 const FAQS = [
   {
     q: "Who is Follow-Up Desk for?",
@@ -17,26 +23,56 @@ const FAQS = [
   },
   {
     q: "Is my data secure?",
-    a: "When Supabase is connected, row-level security keeps each user's data isolated. We never sell your lead data.",
+    a: "Row-level security keeps each user's data isolated in Supabase. We never sell your lead data.",
   },
 ];
 
 export function Faq() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
   return (
-    <section id="faq" className="bg-muted/40 scroll-mt-20 border-t py-20 md:py-28">
-      <div className="mx-auto max-w-3xl px-4 md:px-8">
-        <div className="text-center">
-          <p className="text-brand text-sm font-medium">FAQ</p>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight">Common questions</h2>
+    <section id="faq" className="scroll-mt-24 border-t border-[#e8e4dc] px-4 py-16 md:px-8 md:py-24">
+      <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:gap-16">
+        <div>
+          <p className="marketing-label">FAQ</p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">
+            Common questions
+          </h2>
+          <p className="mt-4 text-[#6b6560]">
+            Still curious?{" "}
+            <a href="/signup" className="font-medium text-zinc-950 underline-offset-4 hover:underline">
+              Start a free account
+            </a>{" "}
+            and try it on a single lead.
+          </p>
         </div>
-        <dl className="mt-12 space-y-8">
-          {FAQS.map((item) => (
-            <div key={item.q}>
-              <dt className="text-base font-semibold">{item.q}</dt>
-              <dd className="text-muted-foreground mt-2 text-sm leading-relaxed">{item.a}</dd>
-            </div>
-          ))}
-        </dl>
+
+        <div className="divide-y divide-[#e8e4dc]">
+          {FAQS.map((item, index) => {
+            const open = openIndex === index;
+            return (
+              <div key={item.q}>
+                <button
+                  type="button"
+                  className="flex w-full items-start justify-between gap-4 py-5 text-left"
+                  onClick={() => setOpenIndex(open ? null : index)}
+                  aria-expanded={open}
+                >
+                  <span className="font-medium text-zinc-950">{item.q}</span>
+                  <Plus
+                    className={cn(
+                      "mt-0.5 size-4 shrink-0 text-[#6b6560] transition-transform",
+                      open && "rotate-45"
+                    )}
+                  />
+                </button>
+                {open && (
+                  <p className="pb-5 text-sm leading-relaxed text-[#6b6560]">{item.a}</p>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

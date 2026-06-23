@@ -1,6 +1,5 @@
 import { Hero } from "@/components/marketing/hero";
 import { SocialProof } from "@/components/marketing/social-proof";
-import { ProductPreview } from "@/components/marketing/product-preview";
 import { Features } from "@/components/marketing/features";
 import { HowItWorks } from "@/components/marketing/how-it-works";
 import { PricingSection } from "@/components/marketing/pricing";
@@ -24,10 +23,9 @@ export default function LandingPage() {
     <>
       <Hero />
       <SocialProof />
-      <ProductPreview />
       <Features />
       <HowItWorks />
-      <PricingSection className="border-t" />
+      <PricingSection />
       <Faq />
       <CtaSection />
     </>

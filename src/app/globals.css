@@ -134,3 +134,38 @@
     @apply font-sans;
   }
 }
+
+/* Marketing site — warm cream aesthetic */
+.marketing-shell {
+  --marketing-bg: #f7f4ef;
+  --marketing-surface: #ffffff;
+  --marketing-border: #e8e4dc;
+  --marketing-muted: #6b6560;
+  background-color: var(--marketing-bg);
+  color: #1a1a1a;
+}
+
+@layer components {
+  .marketing-label {
+    @apply text-[11px] font-medium tracking-[0.18em] uppercase;
+    color: var(--marketing-muted);
+  }
+
+  .marketing-card {
+    @apply rounded-3xl border bg-white p-6 md:p-8;
+    border-color: var(--marketing-border);
+  }
+
+  .marketing-pill-btn {
+    @apply inline-flex h-10 items-center justify-center gap-2 rounded-full px-5 text-sm font-medium transition-colors;
+  }
+
+  .marketing-pill-btn-primary {
+    @apply bg-zinc-950 text-white hover:bg-zinc-800;
+  }
+
+  .marketing-pill-btn-outline {
+    @apply border bg-transparent hover:bg-black/5;
+    border-color: var(--marketing-border);
+  }
+}
