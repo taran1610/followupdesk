@@ -1,11 +1,12 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { getRepository } from "@/lib/data";
 import { isSupabaseConfigured, appOrigin } from "@/lib/config";
-import { isGmailConfigured } from "@/lib/gmail/config";
-import { gmailRedirectUri } from "@/lib/gmail/request-origin";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { GMAIL_SEND_SCOPE } from "@/lib/gmail/config";
 import {
   deleteGmailConnection,
   getGmailConnectionStatus,
@@ -20,13 +21,11 @@ export interface GmailStatus {
   connected: boolean;
   email: string | null;
   connectedAt: string | null;
-  redirectUri: string | null;
 }
 
 export async function getGmailStatusAction(): Promise<GmailStatus> {
   const user = await requireUser();
-  const configured = isSupabaseConfigured() && isGmailConfigured();
-  const redirectUri = configured ? gmailRedirectUri(appOrigin()) : null;
+  const configured = isSupabaseConfigured();
 
   if (!configured) {
     return {
@@ -34,7 +33,6 @@ export async function getGmailStatusAction(): Promise<GmailStatus> {
       connected: false,
       email: null,
       connectedAt: null,
-      redirectUri: null,
     };
   }
 
@@ -44,8 +42,37 @@ export async function getGmailStatusAction(): Promise<GmailStatus> {
     connected: Boolean(connection),
     email: connection?.email ?? null,
     connectedAt: connection?.connectedAt ?? null,
-    redirectUri,
   };
+}
+
+/** One-click Gmail connect via Supabase Google OAuth (same as sign-in). */
+export async function connectGmailAction(): Promise<void> {
+  await requireUser();
+
+  if (!isSupabaseConfigured()) {
+    redirect("/settings?gmail=unavailable");
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      scopes: GMAIL_SEND_SCOPE,
+      redirectTo: `${appOrigin()}/auth/callback?gmail=connect`,
+      queryParams: {
+        access_type: "offline",
+        prompt: "consent",
+      },
+    },
+  });
+
+  if (error || !data.url) {
+    redirect(
+      `/settings?gmail=error&reason=${encodeURIComponent(error?.message ?? "Could not connect Gmail")}`
+    );
+  }
+
+  redirect(data.url);
 }
 
 export async function disconnectGmailAction(): Promise<ActionResult> {
@@ -78,8 +105,8 @@ export async function sendFollowUpEmailAction(
 ): Promise<ActionResult> {
   const user = await requireUser();
 
-  if (!isSupabaseConfigured() || !isGmailConfigured()) {
-    return { ok: false, error: "Gmail sending is not configured yet." };
+  if (!isSupabaseConfigured()) {
+    return { ok: false, error: "Sign in with a real account to send email." };
   }
 
   const subject = args.subject.trim();

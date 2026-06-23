@@ -1,5 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+import { saveGmailConnection } from "@/lib/gmail/connection";
+import { fetchGmailProfileEmail } from "@/lib/gmail/send";
 
 function safeNextPath(next: string | null): string {
   if (!next || !next.startsWith("/") || next.startsWith("//")) {
@@ -11,29 +13,40 @@ function safeNextPath(next: string | null): string {
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
-  const next = safeNextPath(requestUrl.searchParams.get("next"));
-  const oauthError = requestUrl.searchParams.get("error_description");
+  const gmailConnect = requestUrl.searchParams.get("gmail") === "connect";
+  const next = gmailConnect
+    ? "/settings?gmail=connected"
+    : safeNextPath(requestUrl.searchParams.get("next"));
+  const oauthError =
+    requestUrl.searchParams.get("error_description") ??
+    requestUrl.searchParams.get("error");
 
   const origin = requestUrl.origin;
 
   if (oauthError) {
-    return NextResponse.redirect(
-      `${origin}/login?error=${encodeURIComponent(oauthError)}`
-    );
+    const target = gmailConnect
+      ? `${origin}/settings?gmail=denied&reason=${encodeURIComponent(oauthError)}`
+      : `${origin}/login?error=${encodeURIComponent(oauthError)}`;
+    return NextResponse.redirect(target);
   }
 
   if (!code) {
-    return NextResponse.redirect(`${origin}/login?error=missing_auth_code`);
+    const target = gmailConnect
+      ? `${origin}/settings?gmail=invalid`
+      : `${origin}/login?error=missing_auth_code`;
+    return NextResponse.redirect(target);
   }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anonKey) {
-    return NextResponse.redirect(`${origin}/login?error=supabase_not_configured`);
+    const target = gmailConnect
+      ? `${origin}/settings?gmail=unavailable`
+      : `${origin}/login?error=supabase_not_configured`;
+    return NextResponse.redirect(target);
   }
 
-  // Cookies must be written onto the redirect response (not cookies() alone).
-  const response = NextResponse.redirect(new URL(next, origin));
+  let response = NextResponse.redirect(new URL(next, origin));
 
   const supabase = createServerClient(url, anonKey, {
     cookies: {
@@ -50,9 +63,56 @@ export async function GET(request: NextRequest) {
 
   const { error } = await supabase.auth.exchangeCodeForSession(code);
   if (error) {
-    return NextResponse.redirect(
-      `${origin}/login?error=${encodeURIComponent(error.message)}`
-    );
+    const target = gmailConnect
+      ? `${origin}/settings?gmail=error&reason=${encodeURIComponent(error.message)}`
+      : `${origin}/login?error=${encodeURIComponent(error.message)}`;
+    return NextResponse.redirect(target);
+  }
+
+  if (gmailConnect) {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.user) {
+        throw new Error("Could not read your session after connecting Gmail.");
+      }
+
+      if (!session.provider_refresh_token) {
+        throw new Error(
+          "Gmail send permission was not granted. Try again and approve email access."
+        );
+      }
+
+      let email = session.user.email ?? "";
+      if (session.provider_token) {
+        try {
+          email = await fetchGmailProfileEmail(session.provider_token);
+        } catch {
+          // Fall back to auth email if profile lookup fails.
+        }
+      }
+
+      if (!email) {
+        throw new Error("Could not determine your Gmail address.");
+      }
+
+      await saveGmailConnection({
+        userId: session.user.id,
+        email,
+        accessToken: session.provider_token ?? "",
+        refreshToken: session.provider_refresh_token,
+        expiresInSeconds: 3600,
+      });
+
+      response = NextResponse.redirect(new URL("/settings?gmail=connected", origin));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "connect_failed";
+      return NextResponse.redirect(
+        `${origin}/settings?gmail=error&reason=${encodeURIComponent(message)}`
+      );
+    }
   }
 
   return response;

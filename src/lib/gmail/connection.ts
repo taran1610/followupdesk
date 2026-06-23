@@ -1,6 +1,7 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/config";
+import { isGmailConfigured } from "@/lib/gmail/config";
 import { refreshAccessToken } from "./oauth";
 
 export interface GmailConnectionStatus {
@@ -83,6 +84,14 @@ export async function deleteGmailConnection(userId: string): Promise<void> {
   if (error) throw error;
 }
 
+async function refreshViaSupabaseSession(userId: string): Promise<string | null> {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.auth.refreshSession();
+  if (error || !data.session?.provider_token) return null;
+  if (data.session.user.id !== userId) return null;
+  return data.session.provider_token;
+}
+
 export async function getValidGmailAccessToken(userId: string): Promise<{
   accessToken: string;
   email: string;
@@ -93,24 +102,42 @@ export async function getValidGmailAccessToken(userId: string): Promise<{
   }
 
   const expiresAt = new Date(connection.expiresAt).getTime();
-  const stillValid = expiresAt - Date.now() > 60_000;
+  const stillValid =
+    expiresAt - Date.now() > 60_000 && Boolean(connection.accessToken);
 
   if (stillValid) {
     return { accessToken: connection.accessToken, email: connection.email };
   }
 
-  const refreshed = await refreshAccessToken(connection.refreshToken);
-  const admin = createSupabaseAdminClient();
-  const newExpiresAt = new Date(Date.now() + refreshed.expires_in * 1000).toISOString();
+  if (isGmailConfigured()) {
+    const refreshed = await refreshAccessToken(connection.refreshToken);
+    const admin = createSupabaseAdminClient();
+    const newExpiresAt = new Date(Date.now() + refreshed.expires_in * 1000).toISOString();
 
-  const { error } = await admin
-    .from("gmail_connections")
-    .update({
-      access_token: refreshed.access_token,
-      expires_at: newExpiresAt,
-    })
-    .eq("user_id", userId);
-  if (error) throw error;
+    const { error } = await admin
+      .from("gmail_connections")
+      .update({
+        access_token: refreshed.access_token,
+        expires_at: newExpiresAt,
+      })
+      .eq("user_id", userId);
+    if (error) throw error;
 
-  return { accessToken: refreshed.access_token, email: connection.email };
+    return { accessToken: refreshed.access_token, email: connection.email };
+  }
+
+  const sessionToken = await refreshViaSupabaseSession(userId);
+  if (sessionToken) {
+    const admin = createSupabaseAdminClient();
+    await admin
+      .from("gmail_connections")
+      .update({
+        access_token: sessionToken,
+        expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
+      })
+      .eq("user_id", userId);
+    return { accessToken: sessionToken, email: connection.email };
+  }
+
+  throw new Error("Gmail session expired. Open Settings and connect Gmail again.");
 }

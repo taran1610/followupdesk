@@ -2,12 +2,11 @@ import { getGmailStatusAction } from "@/app/actions/gmail";
 import { GmailConnectCard } from "@/components/gmail-connect-card";
 
 const BANNERS: Record<string, string> = {
-  connected: "Gmail connected — you can send follow-ups from lead pages.",
-  denied: "Google sign-in was cancelled. Try again when you're ready.",
-  expired: "The connection link expired. Please try connecting again.",
-  invalid: "Something went wrong starting Gmail connect. Please try again.",
-  supabase_required: "Create a real account with Supabase before connecting Gmail.",
-  not_configured: "Gmail OAuth is not configured on this server yet.",
+  connected: "Gmail connected — you can send follow-ups from any lead page.",
+  denied: "Gmail connection was cancelled. You can try again anytime.",
+  expired: "That link expired. Click Connect Gmail to try again.",
+  invalid: "Something went wrong. Click Connect Gmail to try again.",
+  unavailable: "Gmail connect requires a signed-in account.",
 };
 
 function bannerFromSearchParams(
