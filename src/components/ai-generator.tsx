@@ -24,6 +24,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { CopyButton } from "@/components/copy-button";
 import { CreateReminderButton } from "@/components/create-reminder-button";
+import { SendEmailButton } from "@/components/send-email-button";
 import {
   AI_GOAL_LABELS,
   AI_GOALS,
@@ -36,7 +37,13 @@ import {
 } from "@/lib/types";
 import { generateFollowUpAction } from "@/app/actions/ai";
 
-export function AiGenerator({ lead }: { lead?: Lead }) {
+export function AiGenerator({
+  lead,
+  gmailConnected = false,
+}: {
+  lead?: Lead;
+  gmailConnected?: boolean;
+}) {
   const [leadName, setLeadName] = useState(lead?.name ?? "");
   const [businessType, setBusinessType] = useState(lead?.company ?? "");
   const [status, setStatus] = useState<string>(lead?.status ?? "New");
@@ -263,20 +270,30 @@ export function AiGenerator({ lead }: { lead?: Lead }) {
                   className="w-44"
                 />
               </div>
-              <div className="flex items-end gap-2">
+              <div className="flex flex-wrap items-end gap-2">
                 <CopyButton value={`${output.subject}\n\n${output.body}`} label="Copy email" />
                 {lead && (
-                  <CreateReminderButton
-                    leadId={lead.id}
-                    triggerLabel="Save as reminder"
-                    variant="default"
-                    defaults={{
-                      channel: "email",
-                      subject: output.subject,
-                      body: output.body,
-                      scheduledFor: output.suggestedNextFollowUpDate,
-                    }}
-                  />
+                  <>
+                    <SendEmailButton
+                      leadId={lead.id}
+                      leadEmail={lead.email}
+                      subject={output.subject}
+                      body={output.body}
+                      suggestedNextFollowUpDate={output.suggestedNextFollowUpDate}
+                      gmailConnected={gmailConnected}
+                    />
+                    <CreateReminderButton
+                      leadId={lead.id}
+                      triggerLabel="Save as reminder"
+                      variant="outline"
+                      defaults={{
+                        channel: "email",
+                        subject: output.subject,
+                        body: output.body,
+                        scheduledFor: output.suggestedNextFollowUpDate,
+                      }}
+                    />
+                  </>
                 )}
               </div>
             </div>

@@ -177,6 +177,9 @@ export class MockRepository implements Repository {
 
   async createFollowup(userId: string, input: CreateFollowupInput): Promise<Followup> {
     const data = getUserData(userId);
+    const status = input.status ?? "scheduled";
+    const sentAt =
+      input.sentAt ?? (status === "sent" ? new Date().toISOString() : null);
     const followup: Followup = {
       id: uid("fu"),
       leadId: input.leadId,
@@ -184,15 +187,22 @@ export class MockRepository implements Repository {
       channel: input.channel,
       subject: input.subject ?? null,
       body: input.body ?? null,
-      status: "scheduled",
+      status,
       scheduledFor: input.scheduledFor ?? null,
-      sentAt: null,
+      sentAt,
       createdAt: new Date().toISOString(),
     };
     data.followups.unshift(followup);
     const lead = data.leads.find((l) => l.id === input.leadId);
     if (lead) {
-      logActivity(data, "followup_scheduled", lead, `Scheduled a ${input.channel} follow-up`);
+      logActivity(
+        data,
+        status === "sent" ? "contacted" : "followup_scheduled",
+        lead,
+        status === "sent"
+          ? `Sent a ${input.channel} follow-up`
+          : `Scheduled a ${input.channel} follow-up`
+      );
     }
     return clone(followup);
   }

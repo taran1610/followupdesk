@@ -31,7 +31,7 @@ export const PRICING_PLANS = [
     features: [
       "Unlimited leads",
       "Priority follow-up scoring",
-      "Email sending via Resend (soon)",
+      "Send follow-ups from your Gmail",
       "Supabase sync & backups",
       "Export & activity history",
     ],

@@ -24,7 +24,7 @@ const FEATURES = [
     icon: Bot,
     title: "AI draft messages",
     description:
-      "Generate email and SMS follow-ups tuned to tone and goal. Edit everything before you copy or send.",
+      "Generate email and SMS follow-ups tuned to tone and goal. Connect Gmail and send from your own address.",
   },
   {
     icon: AlarmClock,
@@ -42,7 +42,7 @@ const FEATURES = [
     icon: Sparkles,
     title: "Ready to grow",
     description:
-      "Start in demo mode today. Supabase auth, email sending, and calendar sync are on the roadmap.",
+      "Connect Gmail to send follow-ups as you. Calendar sync is on the roadmap.",
   },
 ];
 

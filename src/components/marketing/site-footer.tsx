@@ -47,7 +47,7 @@ export function SiteFooter() {
         </div>
         <div className="text-muted-foreground mt-12 flex flex-col gap-2 border-t pt-8 text-xs sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Follow-Up Desk. All rights reserved.</p>
-          <p>Supabase, email, and calendar integrations coming soon.</p>
+          <p>Gmail send-as-you is live. Calendar sync coming soon.</p>
         </div>
       </div>
     </footer>

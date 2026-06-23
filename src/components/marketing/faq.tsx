@@ -9,7 +9,7 @@ const FAQS = [
   },
   {
     q: "Does AI actually send emails?",
-    a: "Not yet. AI drafts messages you can edit and copy. Email sending via Resend and calendar sync are planned next—pricing reflects what's coming.",
+    a: "AI drafts the message—you review and edit it. Connect Gmail in Settings to send follow-ups from your own address with one click. Replies go to your normal inbox.",
   },
   {
     q: "Can I import my existing leads?",

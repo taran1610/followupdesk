@@ -9,6 +9,12 @@ export function isOpenAIConfigured(): boolean {
   return Boolean(process.env.OPENAI_API_KEY);
 }
 
+export function isGmailConfigured(): boolean {
+  return Boolean(
+    process.env.GOOGLE_GMAIL_CLIENT_ID && process.env.GOOGLE_GMAIL_CLIENT_SECRET
+  );
+}
+
 export function isResendConfigured(): boolean {
   return Boolean(process.env.RESEND_API_KEY);
 }

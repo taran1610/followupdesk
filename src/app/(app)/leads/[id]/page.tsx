@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { getRepository } from "@/lib/data";
+import { getGmailStatusAction } from "@/app/actions/gmail";
 import { suggestedNextAction } from "@/lib/followups";
 import { formatCurrency } from "@/lib/format";
 import { formatDate, formatDateTime, relativeDay, relativeFromNow } from "@/lib/date";
@@ -63,9 +64,10 @@ export default async function LeadDetailPage({
   const lead = await repo.getLead(user.id, id);
   if (!lead) notFound();
 
-  const [notes, followups] = await Promise.all([
+  const [notes, followups, gmailStatus] = await Promise.all([
     repo.listNotes(user.id, id),
     repo.listFollowups(user.id, id),
+    getGmailStatusAction(),
   ]);
 
   const isClosed = lead.status === "Won" || lead.status === "Lost";
@@ -215,7 +217,7 @@ export default async function LeadDetailPage({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <AiGenerator lead={lead} />
+          <AiGenerator lead={lead} gmailConnected={gmailStatus.connected} />
         </CardContent>
       </Card>
 
@@ -248,9 +250,11 @@ export default async function LeadDetailPage({
                       )}
                       <p className="text-muted-foreground text-xs">
                         <span className="capitalize">{fu.status}</span>
-                        {fu.scheduledFor
-                          ? ` · for ${formatDate(fu.scheduledFor)}`
-                          : ""}
+                        {fu.status === "sent" && fu.sentAt
+                          ? ` · ${formatDateTime(fu.sentAt)}`
+                          : fu.scheduledFor
+                            ? ` · for ${formatDate(fu.scheduledFor)}`
+                            : ""}
                       </p>
                     </div>
                   </li>

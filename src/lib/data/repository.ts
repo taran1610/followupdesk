@@ -17,6 +17,8 @@ export interface CreateFollowupInput {
   subject?: string | null;
   body?: string | null;
   scheduledFor?: string | null;
+  status?: "scheduled" | "sent" | "cancelled";
+  sentAt?: string | null;
 }
 
 export interface Repository {

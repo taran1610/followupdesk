@@ -164,6 +164,7 @@ export class SupabaseRepository implements Repository {
 
   async createFollowup(userId: string, input: CreateFollowupInput): Promise<Followup> {
     const supabase = await createSupabaseServerClient();
+    const status = input.status ?? "scheduled";
     const { data, error } = await supabase
       .from("followups")
       .insert({
@@ -172,8 +173,9 @@ export class SupabaseRepository implements Repository {
         channel: input.channel,
         subject: input.subject ?? null,
         body: input.body ?? null,
-        status: "scheduled",
+        status,
         scheduled_for: input.scheduledFor ?? null,
+        sent_at: input.sentAt ?? (status === "sent" ? new Date().toISOString() : null),
       })
       .select("*")
       .single();
